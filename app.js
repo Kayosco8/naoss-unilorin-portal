@@ -15,6 +15,44 @@ async function loadExecutives() {
 
   const { data, error } = await supabaseClient
     .from("executives")
+    .select("*");
+
+  console.log("EXECUTIVES FROM SUPABASE:", data);
+
+  if (error) {
+    console.error("SUPABASE ERROR:", error);
+    executiveList.innerHTML = "<p>Unable to load executive records.</p>";
+    return;
+  }
+
+  executiveList.innerHTML = "";
+
+  data.forEach(function (executive) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h3>${executive.position}</h3>
+      <p><strong>${executive.full_name}</strong></p>
+      ${
+        executive.department
+          ? `<p>Department: ${executive.department}</p>`
+          : ""
+      }
+      ${
+        executive.level
+          ? `<p>Level: ${executive.level}</p>`
+          : ""
+      }
+    `;
+
+    executiveList.appendChild(card);
+  });
+}
+  const executiveList = document.getElementById("executive-list");
+
+  const { data, error } = await supabaseClient
+    .from("executives")
     .select("full_name, position, department, level, photo_url")
     .order("position");
 
