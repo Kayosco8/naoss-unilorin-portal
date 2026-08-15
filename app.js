@@ -19,7 +19,7 @@ async function loadExecutives() {
 
   if (result.error) {
     console.error(result.error);
-    list.innerHTML = "<p>Unable to load executive records.</p>";
+    list.innerHTML = "<p>Supabase error: " + result.error.message + "</p>";
     return;
   }
 
