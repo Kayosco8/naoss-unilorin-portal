@@ -18,13 +18,18 @@ async function loadExecutives() {
     .from("executives")
     .select("*");
 
-  if (result.error) {
-    console.error("Supabase error:", result.error);
-    list.innerHTML =
-      "<p>Unable to load executive records.</p>";
-    return;
-  }
+if (result.error) {
+  console.error("Supabase error:", result.error);
 
+  list.innerHTML =
+    "<div class='card'>" +
+    "<h3>Supabase Error</h3>" +
+    "<p>" + (result.error.message || "Unknown error") + "</p>" +
+    "<p>Code: " + (result.error.code || "N/A") + "</p>" +
+    "</div>";
+
+  return;
+}
   list.innerHTML = "";
 
   result.data.forEach(function (executive) {
