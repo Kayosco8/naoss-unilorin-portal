@@ -176,8 +176,81 @@ async function loadProgrammes() {
 // ===============================
 // START WEBSITE
 // ===============================
+async function loadAdministrations() {
+  const list = document.getElementById("administration-list");
 
+  if (!list) {
+    console.error("Administration list not found.");
+    return;
+  }
+
+  const result = await supabaseClient
+    .from("administrations")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (result.error) {
+    console.error("Administration error:", result.error);
+
+    list.innerHTML =
+      "<div class='card'>" +
+      "<h3>Unable to load administrations</h3>" +
+      "<p>" + result.error.message + "</p>" +
+      "</div>";
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  if (!result.data || result.data.length === 0) {
+    list.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>No administrations have been added yet.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  result.data.forEach(function (administration) {
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML =
+      "<h3>" +
+      (administration.name || "Administration") +
+      "</h3>" +
+
+      (administration.session
+        ? "<p><strong>Session:</strong> " +
+          administration.session +
+          "</p>"
+        : "") +
+
+      (administration.president
+        ? "<p><strong>President:</strong> " +
+          administration.president +
+          "</p>"
+        : "") +
+
+      (administration.general_secretary
+        ? "<p><strong>General Secretary:</strong> " +
+          administration.general_secretary +
+          "</p>"
+        : "") +
+
+      (administration.description
+        ? "<p>" +
+          administration.description +
+          "</p>"
+        : "");
+
+    list.appendChild(card);
+  });
+}
 document.addEventListener("DOMContentLoaded", function () {
   loadExecutives();
   loadProgrammes();
+  loadAdministrations();
 });
