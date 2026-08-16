@@ -1,5 +1,5 @@
-const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
+const SUPABASE_URL = "YOUR_EXISTING_SUPABASE_URL";
+const SUPABASE_KEY = "YOUR_EXISTING_SUPABASE_KEY";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -18,26 +18,37 @@ async function loadExecutives() {
     .from("executives")
     .select("*");
 
-if (result.error) {
-  console.error("Supabase error:", result.error);
+  if (result.error) {
+    console.error("Supabase error:", result.error);
 
-  list.innerHTML =
-    "<div class='card'>" +
-    "<h3>Supabase Error</h3>" +
-    "<p>" + (result.error.message || "Unknown error") + "</p>" +
-    "<p>Code: " + (result.error.code || "N/A") + "</p>" +
-    "</div>";
+    list.innerHTML =
+      "<div class='card'>" +
+      "<h3>Unable to load executives</h3>" +
+      "<p>" + result.error.message + "</p>" +
+      "</div>";
 
-  return;
-}
+    return;
+  }
+
   list.innerHTML = "";
 
   result.data.forEach(function (executive) {
     const card = document.createElement("div");
-
     card.className = "card";
 
+    let photoHTML = "";
+
+    if (executive.photo_url) {
+      photoHTML =
+        "<img src='" +
+        executive.photo_url +
+        "' alt='" +
+        (executive.full_name || "Executive") +
+        "' style='width:120px;height:120px;object-fit:cover;border-radius:50%;display:block;margin-bottom:20px;'>";
+    }
+
     card.innerHTML =
+      photoHTML +
       "<h3>" +
       (executive.position || "Executive") +
       "</h3>" +
@@ -59,9 +70,6 @@ if (result.error) {
   });
 }
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
-    loadExecutives();
-  }
-);
+document.addEventListener("DOMContentLoaded", function () {
+  loadExecutives();
+});
