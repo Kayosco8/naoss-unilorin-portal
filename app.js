@@ -1,8 +1,8 @@
 const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co/rest/v1/";
-const SUPABASE_KEY = "YOUR_EXISTING_SUPABASE_KEY";
+const SUPABASE_KEY = "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
 
 const supabaseClient = window.supabase.createClient(
-  sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA,
+  SUPABASE_URL,
   SUPABASE_KEY
 );
 
@@ -23,8 +23,13 @@ async function loadExecutives() {
 
     list.innerHTML =
       "<div class='card'>" +
-      "<h3>Unable to load executives</h3>" +
-      "<p>" + result.error.message + "</p>" +
+      "<h3>Supabase Error</h3>" +
+      "<p>" +
+      (result.error.message || "Unable to load executive records.") +
+      "</p>" +
+      "<p>Code: " +
+      (result.error.code || "N/A") +
+      "</p>" +
       "</div>";
 
     return;
@@ -32,8 +37,19 @@ async function loadExecutives() {
 
   list.innerHTML = "";
 
+  if (!result.data || result.data.length === 0) {
+    list.innerHTML =
+      "<div class='card'>" +
+      "<h3>No executives found</h3>" +
+      "<p>No executive records have been added yet.</p>" +
+      "</div>";
+
+    return;
+  }
+
   result.data.forEach(function (executive) {
     const card = document.createElement("div");
+
     card.className = "card";
 
     let photoHTML = "";
@@ -52,14 +68,17 @@ async function loadExecutives() {
       "<h3>" +
       (executive.position || "Executive") +
       "</h3>" +
+
       "<p><strong>" +
       (executive.full_name || "") +
       "</strong></p>" +
+
       (executive.department
         ? "<p>Department: " +
           executive.department +
           "</p>"
         : "") +
+
       (executive.level
         ? "<p>Level: " +
           executive.level +
