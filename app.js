@@ -1,10 +1,15 @@
-const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co";
+const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co/rest/v1/";
 const SUPABASE_KEY = "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+
+
+// ===============================
+// LOAD EXECUTIVES
+// ===============================
 
 async function loadExecutives() {
   const list = document.getElementById("executive-list");
@@ -19,17 +24,12 @@ async function loadExecutives() {
     .select("*");
 
   if (result.error) {
-    console.error("Supabase error:", result.error);
+    console.error("Executive error:", result.error);
 
     list.innerHTML =
       "<div class='card'>" +
-      "<h3>Supabase Error</h3>" +
-      "<p>" +
-      (result.error.message || "Unable to load executive records.") +
-      "</p>" +
-      "<p>Code: " +
-      (result.error.code || "N/A") +
-      "</p>" +
+      "<h3>Unable to load executives</h3>" +
+      "<p>" + result.error.message + "</p>" +
       "</div>";
 
     return;
@@ -41,7 +41,6 @@ async function loadExecutives() {
     list.innerHTML =
       "<div class='card'>" +
       "<h3>No executives found</h3>" +
-      "<p>No executive records have been added yet.</p>" +
       "</div>";
 
     return;
@@ -89,6 +88,97 @@ async function loadExecutives() {
   });
 }
 
+
+// ===============================
+// LOAD PROGRAMMES
+// ===============================
+
+async function loadProgrammes() {
+  const section = document.getElementById("programme-list");
+
+  if (!section) {
+    console.error("Programme list not found.");
+    return;
+  }
+
+  const result = await supabaseClient
+    .from("programmes")
+    .select("*")
+    .order("date", { ascending: false });
+
+  if (result.error) {
+    console.error("Programme error:", result.error);
+
+    section.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>Unable to load programmes.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  section.innerHTML = "";
+
+  if (!result.data || result.data.length === 0) {
+    section.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>No programmes have been added yet.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  result.data.forEach(function (programme) {
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    let photoHTML = "";
+
+    if (programme.photo_url) {
+      photoHTML =
+        "<img src='" +
+        programme.photo_url +
+        "' alt='" +
+        (programme.title || "Programme") +
+        "' style='width:100%;max-height:250px;object-fit:cover;border-radius:10px;margin-bottom:15px;'>";
+    }
+
+    card.innerHTML =
+      photoHTML +
+
+      "<h3>" +
+      (programme.title || "Programme") +
+      "</h3>" +
+
+      (programme.date
+        ? "<p><strong>Date:</strong> " +
+          programme.date +
+          "</p>"
+        : "") +
+
+      (programme.Venue
+        ? "<p><strong>Venue:</strong> " +
+          programme.Venue +
+          "</p>"
+        : "") +
+
+      (programme.Description
+        ? "<p>" +
+          programme.Description +
+          "</p>"
+        : "");
+
+    section.appendChild(card);
+  });
+}
+
+
+// ===============================
+// START WEBSITE
+// ===============================
+
 document.addEventListener("DOMContentLoaded", function () {
   loadExecutives();
+  loadProgrammes();
 });
