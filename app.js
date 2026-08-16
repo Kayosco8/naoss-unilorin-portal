@@ -1,4 +1,4 @@
-const SUPABASE_URL = "YOUR_EXISTING_SUPABASE_URL";
+const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co/rest/v1/";
 const SUPABASE_KEY = "YOUR_EXISTING_SUPABASE_KEY";
 
 const supabaseClient = window.supabase.createClient(
