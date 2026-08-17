@@ -92,7 +92,76 @@ async function loadExecutives() {
 // ===============================
 // LOAD PROGRAMMES
 // ===============================
+// ===============================
+// LOAD DOCUMENTS
+// ===============================
 
+async function loadDocuments() {
+  const section = document.getElementById("document-list");
+
+  if (!section) {
+    console.error("Document list not found.");
+    return;
+  }
+
+  const result = await supabaseClient
+    .from("documents")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (result.error) {
+    console.error("Document error:", result.error);
+
+    section.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>Unable to load documents.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  section.innerHTML = "";
+
+  if (!result.data || result.data.length === 0) {
+    section.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>No documents have been archived yet.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  result.data.forEach(function (document) {
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML =
+      "<h3>" +
+      (document.title || "Official Document") +
+      "</h3>" +
+
+      (document.document_type
+        ? "<p><strong>Type:</strong> " +
+          document.document_type +
+          "</p>"
+        : "") +
+
+      (document.description
+        ? "<p>" +
+          document.description +
+          "</p>"
+        : "") +
+
+      (document.file_url
+        ? "<p><a href='" +
+          document.file_url +
+          "' target='_blank' rel='noopener noreferrer'>View Document</a></p>"
+        : "");
+
+    section.appendChild(card);
+  });
+}
 async function loadProgrammes() {
   const section = document.getElementById("programme-list");
 
