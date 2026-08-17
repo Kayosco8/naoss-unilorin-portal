@@ -102,7 +102,7 @@ async function loadProgrammes() {
   }
 
   const result = await supabaseClient
-  .from("programmes")
+  .from("Programmes")
   .select("*");
 
   if (result.error) {
