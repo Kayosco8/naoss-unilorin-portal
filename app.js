@@ -103,7 +103,8 @@ async function loadProgrammes() {
 
   const result = await supabaseClient
   .from("Programmes")
-  .select("*");
+  .select("*")
+  .order("date", { ascending: false });
 
   if (result.error) {
     console.error("Programme error:", result.error);
