@@ -141,6 +141,70 @@
       display: none;
     }
 
+    .management-section {
+      margin-top: 40px;
+      padding-top: 30px;
+      border-top: 2px solid #eaecf0;
+    }
+
+    .management-section h2 {
+      margin-bottom: 10px;
+    }
+
+    .management-section > p {
+      color: #667085;
+      margin-bottom: 25px;
+    }
+
+    .executive-form {
+      background: #f5f7fa;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+
+    .executive-form button {
+      margin-top: 5px;
+    }
+
+    .executive-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .executive-item {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+      border: 1px solid #eaecf0;
+    }
+
+    .executive-item h3 {
+      color: #0b5d3b;
+      margin-bottom: 5px;
+    }
+
+    .executive-item p {
+      margin-bottom: 4px;
+    }
+
+    .delete-button {
+      background: #b42318;
+      margin-top: 15px;
+    }
+
+    .success-message {
+      background: #ecfdf3;
+      color: #027a48;
+    }
+
+    .error-message {
+      background: #fef3f2;
+      color: #b42318;
+    }
+
     @media (max-width: 600px) {
       .container {
         width: 92%;
@@ -221,6 +285,8 @@
       </div>
 
 
+      <!-- MAIN ADMIN CARDS -->
+
       <div class="admin-grid">
 
         <div class="admin-card">
@@ -249,6 +315,99 @@
         </div>
 
       </div>
+
+
+      <!-- EXECUTIVE MANAGEMENT -->
+
+      <section class="management-section">
+
+        <h2>👥 Manage Executives</h2>
+
+        <p>
+          Add and manage members of the NAOSS Executive Council.
+        </p>
+
+
+        <!-- ADD EXECUTIVE FORM -->
+
+        <div class="executive-form">
+
+          <h3 style="margin-bottom:20px;">
+            Add New Executive
+          </h3>
+
+          <div class="form-group">
+            <label for="executive-name">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              id="executive-name"
+              placeholder="Enter full name"
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="executive-position">
+              Position
+            </label>
+
+            <input
+              type="text"
+              id="executive-position"
+              placeholder="e.g. President"
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="executive-department">
+              Department
+            </label>
+
+            <input
+              type="text"
+              id="executive-department"
+              placeholder="Enter department"
+            >
+          </div>
+
+
+          <div class="form-group">
+            <label for="executive-level">
+              Level
+            </label>
+
+            <input
+              type="text"
+              id="executive-level"
+              placeholder="e.g. 400"
+            >
+          </div>
+
+
+          <button onclick="addExecutive()">
+            ➕ Add Executive
+          </button>
+
+          <div id="executive-message" class="message"></div>
+
+        </div>
+
+
+        <!-- EXISTING EXECUTIVES -->
+
+        <h3 style="margin-bottom:20px;">
+          Current Executives
+        </h3>
+
+        <div id="executive-admin-list" class="executive-list">
+          <p>Loading executives...</p>
+        </div>
+
+      </section>
 
     </section>
 
@@ -323,6 +482,8 @@
 
       showDashboard();
 
+      loadExecutives();
+
     }
 
 
@@ -375,7 +536,249 @@
 
         showDashboard();
 
+        loadExecutives();
+
       }
+
+    }
+
+
+    // ===============================
+    // LOAD EXECUTIVES
+    // ===============================
+
+    async function loadExecutives() {
+
+      const list =
+        document.getElementById(
+          "executive-admin-list"
+        );
+
+      if (!list) return;
+
+
+      const result =
+        await supabaseClient
+          .from("executives")
+          .select("*")
+          .order("created_at", {
+            ascending: false
+          });
+
+
+      if (result.error) {
+
+        list.innerHTML =
+          "<p>Unable to load executives: " +
+          result.error.message +
+          "</p>";
+
+        return;
+      }
+
+
+      list.innerHTML = "";
+
+
+      if (!result.data ||
+          result.data.length === 0) {
+
+        list.innerHTML =
+          "<p>No executives found.</p>";
+
+        return;
+      }
+
+
+      result.data.forEach(function(executive) {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "executive-item";
+
+
+        item.innerHTML =
+
+          "<h3>" +
+          (executive.position || "Executive") +
+          "</h3>" +
+
+          "<p><strong>" +
+          (executive.full_name || "") +
+          "</strong></p>" +
+
+          (
+            executive.department
+              ? "<p>Department: " +
+                executive.department +
+                "</p>"
+              : ""
+          ) +
+
+          (
+            executive.level
+              ? "<p>Level: " +
+                executive.level +
+                "</p>"
+              : ""
+          ) +
+
+          "<button class='delete-button' onclick=\"deleteExecutive('" +
+          executive.id +
+          "')\">" +
+          "Delete" +
+          "</button>";
+
+
+        list.appendChild(item);
+
+      });
+
+    }
+
+
+    // ===============================
+    // ADD EXECUTIVE
+    // ===============================
+
+    async function addExecutive() {
+
+      const name =
+        document
+          .getElementById("executive-name")
+          .value
+          .trim();
+
+      const position =
+        document
+          .getElementById("executive-position")
+          .value
+          .trim();
+
+      const department =
+        document
+          .getElementById("executive-department")
+          .value
+          .trim();
+
+      const level =
+        document
+          .getElementById("executive-level")
+          .value
+          .trim();
+
+      const message =
+        document.getElementById(
+          "executive-message"
+        );
+
+
+      if (!name || !position) {
+
+        message.style.display = "block";
+        message.className =
+          "message error-message";
+
+        message.innerText =
+          "Please enter the executive's name and position.";
+
+        return;
+      }
+
+
+      const result =
+        await supabaseClient
+          .from("executives")
+          .insert([
+            {
+              full_name: name,
+              position: position,
+              department: department,
+              level: level
+            }
+          ]);
+
+
+      if (result.error) {
+
+        message.style.display = "block";
+        message.className =
+          "message error-message";
+
+        message.innerText =
+          "Unable to add executive: " +
+          result.error.message;
+
+        return;
+      }
+
+
+      message.style.display = "block";
+      message.className =
+        "message success-message";
+
+      message.innerText =
+        "Executive added successfully.";
+
+
+      document.getElementById(
+        "executive-name"
+      ).value = "";
+
+      document.getElementById(
+        "executive-position"
+      ).value = "";
+
+      document.getElementById(
+        "executive-department"
+      ).value = "";
+
+      document.getElementById(
+        "executive-level"
+      ).value = "";
+
+
+      loadExecutives();
+
+    }
+
+
+    // ===============================
+    // DELETE EXECUTIVE
+    // ===============================
+
+    async function deleteExecutive(id) {
+
+      const confirmDelete =
+        confirm(
+          "Are you sure you want to delete this executive?"
+        );
+
+
+      if (!confirmDelete) return;
+
+
+      const result =
+        await supabaseClient
+          .from("executives")
+          .delete()
+          .eq("id", id);
+
+
+      if (result.error) {
+
+        alert(
+          "Unable to delete executive: " +
+          result.error.message
+        );
+
+        return;
+      }
+
+
+      loadExecutives();
 
     }
 
@@ -385,4 +788,4 @@
   </script>
 
 </body>
-                             </html>
+  </html>
