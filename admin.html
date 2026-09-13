@@ -2195,3 +2195,1099 @@
 
       }
     );
+  /* MEETINGS */
+
+  async function loadMeetings() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("meetings")
+        .select("*")
+        .order("meeting_date", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById(
+      "meetingCount"
+    ).textContent = data.length;
+
+    const records =
+      document.getElementById(
+        "meetingRecords"
+      );
+
+    records.innerHTML = "";
+
+    data.forEach(function(item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "record";
+
+      div.innerHTML = `
+
+        <h3>${item.title || ""}</h3>
+
+        <p>
+          <strong>Date:</strong>
+          ${item.meeting_date || ""}
+        </p>
+
+        <p>
+          <strong>Time:</strong>
+          ${item.meeting_time || ""}
+        </p>
+
+        <p>
+          <strong>Venue:</strong>
+          ${item.venue || ""}
+        </p>
+
+        <p>
+          <strong>Agenda:</strong>
+          ${item.agenda || ""}
+        </p>
+
+        <p>
+          <strong>Minutes:</strong>
+          ${item.minutes || ""}
+        </p>
+
+        <p>
+          <strong>Resolutions:</strong>
+          ${item.resolutions || ""}
+        </p>
+
+        <p>
+          <strong>Action Points:</strong>
+          ${item.action_points || ""}
+        </p>
+
+        <div class="actions">
+
+          <button
+            class="danger"
+            onclick="deleteRecord(
+              'meetings',
+              '${item.id}',
+              loadMeetings
+            )"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+      records.appendChild(div);
+
+    });
+
+  }
+
+
+  document
+    .getElementById("meetingForm")
+    .addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const record = {
+
+          administration_id:
+            document.getElementById(
+              "meetingAdministration"
+            ).value,
+
+          title:
+            document.getElementById(
+              "meetingTitle"
+            ).value.trim(),
+
+          meeting_date:
+            document.getElementById(
+              "meetingDate"
+            ).value || null,
+
+          meeting_time:
+            document.getElementById(
+              "meetingTime"
+            ).value.trim(),
+
+          venue:
+            document.getElementById(
+              "meetingVenue"
+            ).value.trim(),
+
+          agenda:
+            document.getElementById(
+              "meetingAgenda"
+            ).value.trim(),
+
+          minutes:
+            document.getElementById(
+              "meetingMinutes"
+            ).value.trim(),
+
+          resolutions:
+            document.getElementById(
+              "meetingResolutions"
+            ).value.trim(),
+
+          action_points:
+            document.getElementById(
+              "meetingActionPoints"
+            ).value.trim()
+
+        };
+
+        const { error } =
+          await supabaseClient
+            .from("meetings")
+            .insert([record]);
+
+        if (error) {
+
+          showMessage(
+            "meetingMessage",
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+        showMessage(
+          "meetingMessage",
+          "Meeting added successfully.",
+          "success"
+        );
+
+        document
+          .getElementById("meetingForm")
+          .reset();
+
+        loadMeetings();
+
+      }
+    );
+
+
+  /* PROGRAMMES */
+
+  async function loadProgrammes() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("programmes")
+        .select("*")
+        .order("programme_date", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById(
+      "programmeCount"
+    ).textContent = data.length;
+
+    const records =
+      document.getElementById(
+        "programmeRecords"
+      );
+
+    records.innerHTML = "";
+
+    data.forEach(function(item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "record";
+
+      div.innerHTML = `
+
+        <h3>${item.title || ""}</h3>
+
+        <p>
+          <strong>Theme:</strong>
+          ${item.theme || ""}
+        </p>
+
+        <p>
+          <strong>Date:</strong>
+          ${item.programme_date || ""}
+        </p>
+
+        <p>
+          <strong>Venue:</strong>
+          ${item.venue || ""}
+        </p>
+
+        <p>
+          <strong>Objectives:</strong>
+          ${item.objectives || ""}
+        </p>
+
+        <p>
+          <strong>Report:</strong>
+          ${item.report || ""}
+        </p>
+
+        <p>
+          <strong>Outcome:</strong>
+          ${item.outcome || ""}
+        </p>
+
+        <div class="actions">
+
+          <button
+            class="danger"
+            onclick="deleteRecord(
+              'programmes',
+              '${item.id}',
+              loadProgrammes
+            )"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+      records.appendChild(div);
+
+    });
+
+  }
+
+
+  document
+    .getElementById("programmeForm")
+    .addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const record = {
+
+          administration_id:
+            document.getElementById(
+              "programmeAdministration"
+            ).value,
+
+          title:
+            document.getElementById(
+              "programmeTitle"
+            ).value.trim(),
+
+          theme:
+            document.getElementById(
+              "programmeTheme"
+            ).value.trim(),
+
+          programme_date:
+            document.getElementById(
+              "programmeDate"
+            ).value || null,
+
+          venue:
+            document.getElementById(
+              "programmeVenue"
+            ).value.trim(),
+
+          objectives:
+            document.getElementById(
+              "programmeObjectives"
+            ).value.trim(),
+
+          report:
+            document.getElementById(
+              "programmeReport"
+            ).value.trim(),
+
+          outcome:
+            document.getElementById(
+              "programmeOutcome"
+            ).value.trim()
+
+        };
+
+        const { error } =
+          await supabaseClient
+            .from("programmes")
+            .insert([record]);
+
+        if (error) {
+
+          showMessage(
+            "programmeMessage",
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+        showMessage(
+          "programmeMessage",
+          "Programme added successfully.",
+          "success"
+        );
+
+        document
+          .getElementById("programmeForm")
+          .reset();
+
+        loadProgrammes();
+
+      }
+    );
+
+
+  /* DOCUMENTS */
+
+  async function loadDocuments() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("documents")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById(
+      "documentCount"
+    ).textContent = data.length;
+
+    const records =
+      document.getElementById(
+        "documentRecords"
+      );
+
+    records.innerHTML = "";
+
+    data.forEach(function(item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "record";
+
+      div.innerHTML = `
+
+        <h3>${item.title || ""}</h3>
+
+        <p>
+          <strong>Type:</strong>
+          ${item.document_type || ""}
+        </p>
+
+        <p>
+          ${item.description || ""}
+        </p>
+
+        ${
+          item.file_url
+            ? `<p>
+                <a
+                  href="${item.file_url}"
+                  target="_blank"
+                >
+                  Open Document
+                </a>
+              </p>`
+            : ""
+        }
+
+        <p>
+          <strong>Uploaded By:</strong>
+          ${item.uploaded_by || ""}
+        </p>
+
+        <div class="actions">
+
+          <button
+            class="danger"
+            onclick="deleteRecord(
+              'documents',
+              '${item.id}',
+              loadDocuments
+            )"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+      records.appendChild(div);
+
+    });
+
+  }
+
+
+  document
+    .getElementById("documentForm")
+    .addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const record = {
+
+          administration_id:
+            document.getElementById(
+              "documentAdministration"
+            ).value,
+
+          title:
+            document.getElementById(
+              "documentTitle"
+            ).value.trim(),
+
+          document_type:
+            document.getElementById(
+              "documentType"
+            ).value.trim(),
+
+          file_url:
+            document.getElementById(
+              "documentFileUrl"
+            ).value.trim(),
+
+          description:
+            document.getElementById(
+              "documentDescription"
+            ).value.trim(),
+
+          uploaded_by:
+            document.getElementById(
+              "documentUploadedBy"
+            ).value.trim()
+
+        };
+
+        const { error } =
+          await supabaseClient
+            .from("documents")
+            .insert([record]);
+
+        if (error) {
+
+          showMessage(
+            "documentMessage",
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+        showMessage(
+          "documentMessage",
+          "Document added successfully.",
+          "success"
+        );
+
+        document
+          .getElementById("documentForm")
+          .reset();
+
+        loadDocuments();
+
+      }
+    );
+
+
+  /* REPORTS */
+
+  async function loadReports() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("reports")
+        .select("*")
+        .order("report_date", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById(
+      "reportCount"
+    ).textContent = data.length;
+
+    const records =
+      document.getElementById(
+        "reportRecords"
+      );
+
+    records.innerHTML = "";
+
+    data.forEach(function(item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "record";
+
+      div.innerHTML = `
+
+        <h3>${item.title || ""}</h3>
+
+        <p>
+          <strong>Type:</strong>
+          ${item.report_type || ""}
+        </p>
+
+        <p>
+          <strong>Date:</strong>
+          ${item.report_date || ""}
+        </p>
+
+        <p>
+          ${item.content || ""}
+        </p>
+
+        ${
+          item.file_url
+            ? `<p>
+                <a
+                  href="${item.file_url}"
+                  target="_blank"
+                >
+                  Open Report
+                </a>
+              </p>`
+            : ""
+        }
+
+        <div class="actions">
+
+          <button
+            class="danger"
+            onclick="deleteRecord(
+              'reports',
+              '${item.id}',
+              loadReports
+            )"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+      records.appendChild(div);
+
+    });
+
+  }
+
+
+  document
+    .getElementById("reportForm")
+    .addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const record = {
+
+          administration_id:
+            document.getElementById(
+              "reportAdministration"
+            ).value,
+
+          title:
+            document.getElementById(
+              "reportTitle"
+            ).value.trim(),
+
+          report_type:
+            document.getElementById(
+              "reportType"
+            ).value.trim(),
+
+          report_date:
+            document.getElementById(
+              "reportDate"
+            ).value || null,
+
+          content:
+            document.getElementById(
+              "reportContent"
+            ).value.trim(),
+
+          file_url:
+            document.getElementById(
+              "reportFileUrl"
+            ).value.trim()
+
+        };
+
+        const { error } =
+          await supabaseClient
+            .from("reports")
+            .insert([record]);
+
+        if (error) {
+
+          showMessage(
+            "reportMessage",
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+        showMessage(
+          "reportMessage",
+          "Report added successfully.",
+          "success"
+        );
+
+        document
+          .getElementById("reportForm")
+          .reset();
+
+        loadReports();
+
+      }
+    );
+
+
+  /* HISTORY */
+
+  async function loadHistory() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("history")
+        .select("*")
+        .order("event_date", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById(
+      "historyCount"
+    ).textContent = data.length;
+
+    const records =
+      document.getElementById(
+        "historyRecords"
+      );
+
+    records.innerHTML = "";
+
+    data.forEach(function(item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "record";
+
+      div.innerHTML = `
+
+        <h3>${item.title || ""}</h3>
+
+        <p>
+          <strong>Date:</strong>
+          ${item.event_date || ""}
+        </p>
+
+        <p>
+          ${item.description || ""}
+        </p>
+
+        <div class="actions">
+
+          <button
+            class="danger"
+            onclick="deleteRecord(
+              'history',
+              '${item.id}',
+              loadHistory
+            )"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+      records.appendChild(div);
+
+    });
+
+  }
+
+
+  document
+    .getElementById("historyForm")
+    .addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const record = {
+
+          title:
+            document.getElementById(
+              "historyTitle"
+            ).value.trim(),
+
+          event_date:
+            document.getElementById(
+              "historyDate"
+            ).value || null,
+
+          description:
+            document.getElementById(
+              "historyDescription"
+            ).value.trim()
+
+        };
+
+        const { error } =
+          await supabaseClient
+            .from("history")
+            .insert([record]);
+
+        if (error) {
+
+          showMessage(
+            "historyMessage",
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+        showMessage(
+          "historyMessage",
+          "History record added successfully.",
+          "success"
+        );
+
+        document
+          .getElementById("historyForm")
+          .reset();
+
+        loadHistory();
+
+      }
+    );
+
+
+  /* HANDOVER */
+
+  async function loadHandoverRecords() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("handover_records")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    document.getElementById(
+      "handoverCount"
+    ).textContent = data.length;
+
+    const records =
+      document.getElementById(
+        "handoverRecords"
+      );
+
+    records.innerHTML = "";
+
+    data.forEach(function(item) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "record";
+
+      div.innerHTML = `
+
+        <h3>${item.title || ""}</h3>
+
+        <p>
+          <strong>Status:</strong>
+          ${item.status || ""}
+        </p>
+
+        <p>
+          ${item.description || ""}
+        </p>
+
+        ${
+          item.file_url
+            ? `<p>
+                <a
+                  href="${item.file_url}"
+                  target="_blank"
+                >
+                  Open Handover File
+                </a>
+              </p>`
+            : ""
+        }
+
+        <div class="actions">
+
+          <button
+            class="danger"
+            onclick="deleteRecord(
+              'handover_records',
+              '${item.id}',
+              loadHandoverRecords
+            )"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `;
+
+      records.appendChild(div);
+
+    });
+
+  }
+
+
+  document
+    .getElementById("handoverForm")
+    .addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+        const record = {
+
+          administration_id:
+            document.getElementById(
+              "handoverAdministration"
+            ).value,
+
+          title:
+            document.getElementById(
+              "handoverTitle"
+            ).value.trim(),
+
+          description:
+            document.getElementById(
+              "handoverDescription"
+            ).value.trim(),
+
+          file_url:
+            document.getElementById(
+              "handoverFileUrl"
+            ).value.trim(),
+
+          status:
+            document.getElementById(
+              "handoverStatus"
+            ).value.trim()
+
+        };
+
+        const { error } =
+          await supabaseClient
+            .from("handover_records")
+            .insert([record]);
+
+        if (error) {
+
+          showMessage(
+            "handoverMessage",
+            error.message,
+            "error"
+          );
+
+          return;
+
+        }
+
+        showMessage(
+          "handoverMessage",
+          "Handover record added successfully.",
+          "success"
+        );
+
+        document
+          .getElementById("handoverForm")
+          .reset();
+
+        loadHandoverRecords();
+
+      }
+    );
+
+
+  /* DELETE RECORD */
+
+  async function deleteRecord(
+    table,
+    id,
+    reloadFunction
+  ) {
+
+    const confirmed =
+      confirm(
+        "Are you sure you want to delete this record?"
+      );
+
+    if (!confirmed) return;
+
+
+    const { error } =
+      await supabaseClient
+        .from(table)
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+      alert(
+        "Delete failed: " +
+        error.message
+      );
+
+      return;
+
+    }
+
+
+    reloadFunction();
+
+  }
+
+
+  /* LOAD EVERYTHING */
+
+  async function loadEverything() {
+
+    await loadAdministrations();
+
+    await refreshAdministrationOptions();
+
+    await loadExecutives();
+
+    await loadMeetings();
+
+    await loadProgrammes();
+
+    await loadDocuments();
+
+    await loadReports();
+
+    await loadHistory();
+
+    await loadHandoverRecords();
+
+  }
+
+
+  /* CHECK LOGIN SESSION */
+
+  async function checkSession() {
+
+    const {
+      data: {
+        session
+      }
+    } =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if (session) {
+
+      document.getElementById(
+        "loginSection"
+      ).style.display = "none";
+
+      document.getElementById(
+        "dashboard"
+      ).style.display = "block";
+
+      loadEverything();
+
+    } else {
+
+      document.getElementById(
+        "loginSection"
+      ).style.display = "block";
+
+      document.getElementById(
+        "dashboard"
+      ).style.display = "none";
+
+    }
+
+  }
+
+
+  checkSession();
+
+</script>
+
+</body>
+
+</html>
