@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>NAOSS Admin Dashboard</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -169,10 +168,6 @@
       margin-top: 5px;
     }
 
-    .submit-btn:hover {
-      opacity: .9;
-    }
-
     .records {
       margin-top: 25px;
       display: grid;
@@ -221,10 +216,6 @@
       color: #991b1b;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
     .photo-preview {
       width: 100px;
       height: 100px;
@@ -237,6 +228,11 @@
     .small-note {
       font-size: 12px;
       color: #667085;
+    }
+
+    .loading {
+      color: #667085;
+      padding: 10px 0;
     }
 
     @media(max-width:700px) {
@@ -281,6 +277,7 @@
   <form id="loginForm">
 
     <label>Email</label>
+
     <input
       type="email"
       id="loginEmail"
@@ -289,6 +286,7 @@
     >
 
     <label>Password</label>
+
     <input
       type="password"
       id="loginPassword"
@@ -311,494 +309,412 @@
 
 <div id="dashboard" class="dashboard">
 
-  <div class="container">
-
-    <div class="welcome">
-      <h2>Welcome, Administrator 👋</h2>
-      <p>Manage the NAOSS Unilorin Digital Administrative Archive from here.</p>
-    </div>
-
-
-    <!-- STATISTICS -->
-
-    <div class="stats">
-
-      <div class="stat">
-        <h3 id="adminCount">0</h3>
-        <p>Administrations</p>
-      </div>
-
-      <div class="stat">
-        <h3 id="executiveCount">0</h3>
-        <p>Executives</p>
-      </div>
-
-      <div class="stat">
-        <h3 id="meetingCount">0</h3>
-        <p>Meetings</p>
-      </div>
-
-      <div class="stat">
-        <h3 id="programmeCount">0</h3>
-        <p>Programmes</p>
-      </div>
-
-      <div class="stat">
-        <h3 id="documentCount">0</h3>
-        <p>Documents</p>
-      </div>
-
-      <div class="stat">
-        <h3 id="reportCount">0</h3>
-        <p>Reports</p>
-      </div>
-
-    </div>
-
-
-    <!-- ADMINISTRATIONS -->
-
-    <div class="section">
-
-      <h2>🏛️ Administrations</h2>
-
-      <form id="administrationForm">
-
-        <label>Administration Name</label>
-        <input
-          id="adminName"
-          placeholder="e.g. Prestige Era"
-          required
-        >
-
-        <label>Session</label>
-        <input
-          id="adminSession"
-          placeholder="e.g. 2026/2027"
-          required
-        >
-
-        <label>Start Date</label>
-        <input
-          type="date"
-          id="adminStartDate"
-        >
-
-        <label>End Date</label>
-        <input
-          type="date"
-          id="adminEndDate"
-        >
-
-        <label>President</label>
-        <input
-          id="adminPresident"
-          placeholder="President's name"
-        >
-
-        <label>General Secretary</label>
-        <input
-          id="adminSecretary"
-          placeholder="General Secretary's name"
-        >
-
-        <label>Description</label>
-        <textarea
-          id="adminDescription"
-          placeholder="Description of the administration"
-        ></textarea>
-
-        <button class="submit-btn" type="submit">
-          Add Administration
-        </button>
-
-      </form>
-
-      <div id="administrationMessage" class="message"></div>
-
-      <div id="administrationRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- EXECUTIVES -->
-
-    <div class="section">
-
-      <h2>👥 Executive Council</h2>
-
-      <form id="executiveForm">
-
-        <label>Administration</label>
-        <select id="executiveAdministration" required></select>
-
-        <label>Full Name</label>
-        <input
-          id="executiveName"
-          placeholder="Full name"
-          required
-        >
-
-        <label>Position</label>
-        <input
-          id="executivePosition"
-          placeholder="e.g. President"
-          required
-        >
-
-        <label>Department</label>
-        <input
-          id="executiveDepartment"
-          placeholder="Department"
-        >
-
-        <label>Level</label>
-        <input
-          id="executiveLevel"
-          placeholder="e.g. 400"
-        >
-
-        <label>Passport / Executive Photo</label>
-        <input
-          type="file"
-          id="executivePhoto"
-          accept="image/*"
-        >
-
-        <img
-          id="photoPreview"
-          class="photo-preview"
-          alt="Photo preview"
-        >
-
-        <p class="small-note">
-          Photos will be uploaded to the existing executive-photos storage bucket.
-        </p>
-
-        <button class="submit-btn" type="submit">
-          Add Executive
-        </button>
-
-      </form>
-
-      <div id="executiveMessage" class="message"></div>
-
-      <div id="executiveRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- MEETINGS -->
-
-    <div class="section">
-
-      <h2>📅 Meetings</h2>
-
-      <form id="meetingForm">
-
-        <label>Administration</label>
-        <select id="meetingAdministration" required></select>
-
-        <label>Meeting Title</label>
-        <input
-          id="meetingTitle"
-          placeholder="e.g. Second CEC Meeting"
-          required
-        >
-
-        <label>Meeting Date</label>
-        <input
-          type="date"
-          id="meetingDate"
-        >
-
-        <label>Meeting Time</label>
-        <input
-          id="meetingTime"
-          placeholder="e.g. 6:30 PM"
-        >
-
-        <label>Venue</label>
-        <input
-          id="meetingVenue"
-          placeholder="e.g. Google Meet / NAOSS Secretariat"
-        >
-
-        <label>Agenda</label>
-        <textarea id="meetingAgenda"></textarea>
-
-        <label>Minutes</label>
-        <textarea id="meetingMinutes"></textarea>
-
-        <label>Resolutions</label>
-        <textarea id="meetingResolutions"></textarea>
-
-        <label>Action Points</label>
-        <textarea id="meetingActionPoints"></textarea>
-
-        <button class="submit-btn" type="submit">
-          Add Meeting
-        </button>
-
-      </form>
-
-      <div id="meetingMessage" class="message"></div>
-
-      <div id="meetingRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- PROGRAMMES -->
-
-    <div class="section">
-
-      <h2>🎯 Programmes & Activities</h2>
-
-      <form id="programmeForm">
-
-        <label>Administration</label>
-        <select id="programmeAdministration" required></select>
-
-        <label>Programme Title</label>
-        <input
-          id="programmeTitle"
-          placeholder="Programme title"
-          required
-        >
-
-        <label>Theme</label>
-        <input
-          id="programmeTheme"
-          placeholder="Programme theme"
-        >
-
-        <label>Programme Date</label>
-        <input
-          type="date"
-          id="programmeDate"
-        >
-
-        <label>Venue</label>
-        <input
-          id="programmeVenue"
-          placeholder="Programme venue"
-        >
-
-        <label>Objectives</label>
-        <textarea id="programmeObjectives"></textarea>
-
-        <label>Report</label>
-        <textarea id="programmeReport"></textarea>
-
-        <label>Outcome</label>
-        <textarea id="programmeOutcome"></textarea>
-
-        <button class="submit-btn" type="submit">
-          Add Programme
-        </button>
-
-      </form>
-
-      <div id="programmeMessage" class="message"></div>
-
-      <div id="programmeRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- DOCUMENTS -->
-
-    <div class="section">
-
-      <h2>📄 Documents & Records</h2>
-
-      <form id="documentForm">
-
-        <label>Administration</label>
-        <select id="documentAdministration" required></select>
-
-        <label>Document Title</label>
-        <input
-          id="documentTitle"
-          placeholder="e.g. Constitution"
-          required
-        >
-
-        <label>Document Type</label>
-        <input
-          id="documentType"
-          placeholder="e.g. Constitution, Notice, Minutes"
-        >
-
-        <label>File URL</label>
-        <input
-          id="documentFileUrl"
-          placeholder="Paste document link"
-        >
-
-        <label>Description</label>
-        <textarea id="documentDescription"></textarea>
-
-        <button class="submit-btn" type="submit">
-          Add Document
-        </button>
-
-      </form>
-
-      <div id="documentMessage" class="message"></div>
-
-      <div id="documentRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- REPORTS -->
-
-    <div class="section">
-
-      <h2>📝 Reports</h2>
-
-      <form id="reportForm">
-
-        <label>Administration</label>
-        <select id="reportAdministration" required></select>
-
-        <label>Report Title</label>
-        <input
-          id="reportTitle"
-          placeholder="Report title"
-          required
-        >
-
-        <label>Report Type</label>
-        <input
-          id="reportType"
-          placeholder="e.g. Programme Report"
-        >
-
-        <label>Report Date</label>
-        <input
-          type="date"
-          id="reportDate"
-        >
-
-        <label>Report Content</label>
-        <textarea id="reportContent"></textarea>
-
-        <label>File URL</label>
-        <input
-          id="reportFileUrl"
-          placeholder="Paste report file link if available"
-        >
-
-        <button class="submit-btn" type="submit">
-          Add Report
-        </button>
-
-      </form>
-
-      <div id="reportMessage" class="message"></div>
-
-      <div id="reportRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- HISTORY -->
-
-    <div class="section">
-
-      <h2>📚 NAOSS History</h2>
-
-      <form id="historyForm">
-
-        <label>History Title</label>
-        <input
-          id="historyTitle"
-          placeholder="e.g. Establishment of NAOSS Unilorin Chapter"
-          required
-        >
-
-        <label>Event Date</label>
-        <input
-          type="date"
-          id="historyDate"
-        >
-
-        <label>Description</label>
-        <textarea id="historyDescription"></textarea>
-
-        <button class="submit-btn" type="submit">
-          Add Historical Record
-        </button>
-
-      </form>
-
-      <div id="historyMessage" class="message"></div>
-
-      <div id="historyRecords" class="records"></div>
-
-    </div>
-
-
-
-    <!-- HANDOVER -->
-
-    <div class="section">
-
-      <h2>🔄 Handover Records</h2>
-
-      <form id="handoverForm">
-
-        <label>Administration</label>
-        <select id="handoverAdministration" required></select>
-
-        <label>Handover Title</label>
-        <input
-          id="handoverTitle"
-          placeholder="e.g. Prestige Era Handover"
-          required
-        >
-
-        <label>Description</label>
-        <textarea id="handoverDescription"></textarea>
-
-        <label>File URL</label>
-        <input
-          id="handoverFileUrl"
-          placeholder="Paste handover document link"
-        >
-
-        <label>Status</label>
-        <select id="handoverStatus">
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-          <option value="Ongoing">Ongoing</option>
-        </select>
-
-        <button class="submit-btn" type="submit">
-          Add Handover Record
-        </button>
-
-      </form>
-
-      <div id="handoverMessage" class="message"></div>
-
-      <div id="handoverRecords" class="records"></div>
-
-    </div>
-
+<div class="container">
+
+<div class="welcome">
+  <h2>Welcome, Administrator 👋</h2>
+  <p>
+    Manage the NAOSS Unilorin Digital Administrative Archive from here.
+  </p>
+</div>
+
+
+<!-- STATISTICS -->
+
+<div class="stats">
+
+  <div class="stat">
+    <h3 id="adminCount">0</h3>
+    <p>Administrations</p>
+  </div>
+
+  <div class="stat">
+    <h3 id="executiveCount">0</h3>
+    <p>Executives</p>
+  </div>
+
+  <div class="stat">
+    <h3 id="meetingCount">0</h3>
+    <p>Meetings</p>
+  </div>
+
+  <div class="stat">
+    <h3 id="programmeCount">0</h3>
+    <p>Programmes</p>
+  </div>
+
+  <div class="stat">
+    <h3 id="documentCount">0</h3>
+    <p>Documents</p>
+  </div>
+
+  <div class="stat">
+    <h3 id="reportCount">0</h3>
+    <p>Reports</p>
   </div>
 
 </div>
 
+
+<!-- ADMINISTRATIONS -->
+
+<div class="section">
+
+<h2>🏛️ Administrations</h2>
+
+<form id="administrationForm">
+
+<label>Administration Name</label>
+<input id="adminName" placeholder="e.g. Prestige Era" required>
+
+<label>Session</label>
+<input id="adminSession" placeholder="e.g. 2026/2027" required>
+
+<label>Start Date</label>
+<input type="date" id="adminStartDate">
+
+<label>End Date</label>
+<input type="date" id="adminEndDate">
+
+<label>President</label>
+<input id="adminPresident" placeholder="President's name">
+
+<label>General Secretary</label>
+<input id="adminSecretary" placeholder="General Secretary's name">
+
+<label>Description</label>
+<textarea id="adminDescription"
+  placeholder="Description of the administration"></textarea>
+
+<button class="submit-btn" type="submit">
+  Add Administration
+</button>
+
+</form>
+
+<div id="administrationMessage" class="message"></div>
+
+<div id="administrationRecords" class="records"></div>
+
+</div>
+
+
+<!-- EXECUTIVES -->
+
+<div class="section">
+
+<h2>👥 Executive Council</h2>
+
+<form id="executiveForm">
+
+<label>Administration</label>
+<select id="executiveAdministration" required></select>
+
+<label>Full Name</label>
+<input id="executiveName" placeholder="Full name" required>
+
+<label>Position</label>
+<input id="executivePosition" placeholder="e.g. President" required>
+
+<label>Department</label>
+<input id="executiveDepartment" placeholder="Department">
+
+<label>Level</label>
+<input id="executiveLevel" placeholder="e.g. 400">
+
+<label>Passport / Executive Photo</label>
+
+<input
+  type="file"
+  id="executivePhoto"
+  accept="image/*"
+>
+
+<img
+  id="photoPreview"
+  class="photo-preview"
+  alt="Photo preview"
+>
+
+<p class="small-note">
+  Photos will be uploaded to the existing executive-photos storage bucket.
+</p>
+
+<button class="submit-btn" type="submit">
+  Add Executive
+</button>
+
+</form>
+
+<div id="executiveMessage" class="message"></div>
+
+<div id="executiveRecords" class="records"></div>
+
+</div>
+
+
+<!-- MEETINGS -->
+
+<div class="section">
+
+<h2>📅 Meetings</h2>
+
+<form id="meetingForm">
+
+<label>Administration</label>
+<select id="meetingAdministration" required></select>
+
+<label>Meeting Title</label>
+<input id="meetingTitle"
+  placeholder="e.g. Second CEC Meeting"
+  required>
+
+<label>Meeting Date</label>
+<input type="date" id="meetingDate">
+
+<label>Meeting Time</label>
+<input id="meetingTime" placeholder="e.g. 6:30 PM">
+
+<label>Venue</label>
+<input id="meetingVenue"
+  placeholder="e.g. Google Meet / NAOSS Secretariat">
+
+<label>Agenda</label>
+<textarea id="meetingAgenda"></textarea>
+
+<label>Minutes</label>
+<textarea id="meetingMinutes"></textarea>
+
+<label>Resolutions</label>
+<textarea id="meetingResolutions"></textarea>
+
+<label>Action Points</label>
+<textarea id="meetingActionPoints"></textarea>
+
+<button class="submit-btn" type="submit">
+  Add Meeting
+</button>
+
+</form>
+
+<div id="meetingMessage" class="message"></div>
+
+<div id="meetingRecords" class="records"></div>
+
+</div>
+
+
+<!-- PROGRAMMES -->
+
+<div class="section">
+
+<h2>🎯 Programmes & Activities</h2>
+
+<form id="programmeForm">
+
+<label>Administration</label>
+<select id="programmeAdministration" required></select>
+
+<label>Programme Title</label>
+<input id="programmeTitle"
+  placeholder="Programme title"
+  required>
+
+<label>Theme</label>
+<input id="programmeTheme"
+  placeholder="Programme theme">
+
+<label>Programme Date</label>
+<input type="date" id="programmeDate">
+
+<label>Venue</label>
+<input id="programmeVenue"
+  placeholder="Programme venue">
+
+<label>Objectives</label>
+<textarea id="programmeObjectives"></textarea>
+
+<label>Report</label>
+<textarea id="programmeReport"></textarea>
+
+<label>Outcome</label>
+<textarea id="programmeOutcome"></textarea>
+
+<button class="submit-btn" type="submit">
+  Add Programme
+</button>
+
+</form>
+
+<div id="programmeMessage" class="message"></div>
+
+<div id="programmeRecords" class="records"></div>
+
+</div>
+
+
+<!-- DOCUMENTS -->
+
+<div class="section">
+
+<h2>📄 Documents & Records</h2>
+
+<form id="documentForm">
+
+<label>Administration</label>
+<select id="documentAdministration" required></select>
+
+<label>Document Title</label>
+<input id="documentTitle"
+  placeholder="e.g. Constitution"
+  required>
+
+<label>Document Type</label>
+<input id="documentType"
+  placeholder="e.g. Constitution, Notice, Minutes">
+
+<label>File URL</label>
+<input id="documentFileUrl"
+  placeholder="Paste document link">
+
+<label>Description</label>
+<textarea id="documentDescription"></textarea>
+
+<button class="submit-btn" type="submit">
+  Add Document
+</button>
+
+</form>
+
+<div id="documentMessage" class="message"></div>
+
+<div id="documentRecords" class="records"></div>
+
+</div>
+
+
+<!-- REPORTS -->
+
+<div class="section">
+
+<h2>📝 Reports</h2>
+
+<form id="reportForm">
+
+<label>Administration</label>
+<select id="reportAdministration" required></select>
+
+<label>Report Title</label>
+<input id="reportTitle"
+  placeholder="Report title"
+  required>
+
+<label>Report Type</label>
+<input id="reportType"
+  placeholder="e.g. Programme Report">
+
+<label>Report Date</label>
+<input type="date" id="reportDate">
+
+<label>Report Content</label>
+<textarea id="reportContent"></textarea>
+
+<label>File URL</label>
+<input id="reportFileUrl"
+  placeholder="Paste report file link if available">
+
+<button class="submit-btn" type="submit">
+  Add Report
+</button>
+
+</form>
+
+<div id="reportMessage" class="message"></div>
+
+<div id="reportRecords" class="records"></div>
+
+</div>
+
+
+<!-- HISTORY -->
+
+<div class="section">
+
+<h2>📚 NAOSS History</h2>
+
+<form id="historyForm">
+
+<label>History Title</label>
+<input id="historyTitle"
+  placeholder="e.g. Establishment of NAOSS Unilorin Chapter"
+  required>
+
+<label>Event Date</label>
+<input type="date" id="historyDate">
+
+<label>Description</label>
+<textarea id="historyDescription"></textarea>
+
+<button class="submit-btn" type="submit">
+  Add Historical Record
+</button>
+
+</form>
+
+<div id="historyMessage" class="message"></div>
+
+<div id="historyRecords" class="records"></div>
+
+</div>
+
+
+<!-- HANDOVER -->
+
+<div class="section">
+
+<h2>🔄 Handover Records</h2>
+
+<form id="handoverForm">
+
+<label>Administration</label>
+<select id="handoverAdministration" required></select>
+
+<label>Handover Title</label>
+<input id="handoverTitle"
+  placeholder="e.g. Prestige Era Handover"
+  required>
+
+<label>Description</label>
+<textarea id="handoverDescription"></textarea>
+
+<label>File URL</label>
+<input id="handoverFileUrl"
+  placeholder="Paste handover document link">
+
+<label>Status</label>
+
+<select id="handoverStatus">
+
+<option value="Pending">Pending</option>
+<option value="Completed">Completed</option>
+<option value="Ongoing">Ongoing</option>
+
+</select>
+
+<button class="submit-btn" type="submit">
+  Add Handover Record
+</button>
+
+</form>
+
+<div id="handoverMessage" class="message"></div>
+
+<div id="handoverRecords" class="records"></div>
+
+</div>
+
+</div>
+</div>
 
 
 <script>
@@ -807,7 +723,7 @@ const SUPABASE_URL =
   "https://tydgxkpvklakqgtctwnj.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
+  "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mQ";
 
 const supabaseClient =
   window.supabase.createClient(
@@ -816,14 +732,15 @@ const supabaseClient =
   );
 
 
-
 /* =========================
-   BASIC HELPERS
+   HELPERS
 ========================= */
 
 function showMessage(id, text, type) {
 
   const box = document.getElementById(id);
+
+  if (!box) return;
 
   box.textContent = text;
 
@@ -835,7 +752,6 @@ function showMessage(id, text, type) {
     box.style.display = "none";
   }, 5000);
 }
-
 
 
 function escapeHTML(value) {
@@ -853,36 +769,49 @@ function escapeHTML(value) {
 }
 
 
-
 /* =========================
    AUTHENTICATION
 ========================= */
-console.log("ADMIN SCRIPT LOADED");
+
 async function checkSession() {
 
-  const result =
-    await supabaseClient.auth.getSession();
+  try {
 
-  if (result.data.session) {
+    const result =
+      await supabaseClient.auth.getSession();
 
-    document.getElementById("loginSection")
-      .style.display = "none";
+    if (result.error) {
+      console.error(result.error);
+      return;
+    }
 
-    document.getElementById("dashboard")
-      .style.display = "block";
+    if (result.data.session) {
 
-    loadEverything();
+      document.getElementById("loginSection")
+        .style.display = "none";
 
-  } else {
+      document.getElementById("dashboard")
+        .style.display = "block";
 
-    document.getElementById("loginSection")
-      .style.display = "block";
+      await loadEverything();
 
-    document.getElementById("dashboard")
-      .style.display = "none";
+    } else {
+
+      document.getElementById("loginSection")
+        .style.display = "block";
+
+      document.getElementById("dashboard")
+        .style.display = "none";
+
+    }
+
+  } catch (error) {
+
+    console.error("Session error:", error);
+
   }
-}
 
+}
 
 
 document.getElementById("loginForm")
@@ -891,38 +820,70 @@ document.getElementById("loginForm")
     event.preventDefault();
 
     const email =
-      document.getElementById("loginEmail").value.trim();
+      document.getElementById("loginEmail")
+        .value.trim();
 
     const password =
-      document.getElementById("loginPassword").value;
+      document.getElementById("loginPassword")
+        .value;
 
-    const result =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+    const button =
+      this.querySelector("button");
 
-    if (result.error) {
+    button.disabled = true;
+    button.textContent = "Logging in...";
+
+    try {
+
+      const result =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+      if (result.error) {
+
+        showMessage(
+          "loginMessage",
+          result.error.message,
+          "error"
+        );
+
+        return;
+      }
 
       showMessage(
         "loginMessage",
-        result.error.message,
+        "Login successful.",
+        "success"
+      );
+
+      document.getElementById("loginSection")
+        .style.display = "none";
+
+      document.getElementById("dashboard")
+        .style.display = "block";
+
+      await loadEverything();
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "loginMessage",
+        "Unable to connect to Supabase.",
         "error"
       );
 
-      return;
+    } finally {
+
+      button.disabled = false;
+      button.textContent = "Login";
+
     }
 
-    showMessage(
-      "loginMessage",
-      "Login successful.",
-      "success"
-    );
-
-    checkSession();
-
   });
-
 
 
 document.getElementById("logoutBtn")
@@ -933,7 +894,6 @@ document.getElementById("logoutBtn")
     location.reload();
 
   });
-
 
 
 /* =========================
@@ -952,9 +912,15 @@ async function loadAdministrations() {
 
   if (result.error) {
 
-    console.error(result.error);
+    console.error("Administration error:", result.error);
 
-    return;
+    document.getElementById(
+      "administrationRecords"
+    ).innerHTML =
+      "<p class='loading'>Unable to load administrations.</p>";
+
+    return [];
+
   }
 
   const records =
@@ -966,6 +932,14 @@ async function loadAdministrations() {
 
   document.getElementById("adminCount")
     .textContent = result.data.length;
+
+
+  if (result.data.length === 0) {
+
+    records.innerHTML =
+      "<p class='loading'>No administrations yet.</p>";
+
+  }
 
 
   result.data.forEach(function(admin) {
@@ -990,6 +964,14 @@ async function loadAdministrations() {
         ${escapeHTML(admin.general_secretary)}
       </p>
 
+      <p><strong>Start:</strong>
+        ${escapeHTML(admin.start_date)}
+      </p>
+
+      <p><strong>End:</strong>
+        ${escapeHTML(admin.end_date)}
+      </p>
+
       <p>${escapeHTML(admin.description)}</p>
 
       <button
@@ -1006,8 +988,9 @@ async function loadAdministrations() {
 
   populateAdministrationSelects(result.data);
 
-}
+  return result.data;
 
+}
 
 
 function populateAdministrationSelects(data) {
@@ -1051,7 +1034,6 @@ function populateAdministrationSelects(data) {
 }
 
 
-
 document.getElementById("administrationForm")
   .addEventListener("submit", async function(event) {
 
@@ -1060,10 +1042,10 @@ document.getElementById("administrationForm")
     const data = {
 
       name:
-        document.getElementById("adminName").value,
+        document.getElementById("adminName").value.trim(),
 
       session:
-        document.getElementById("adminSession").value,
+        document.getElementById("adminSession").value.trim(),
 
       start_date:
         document.getElementById("adminStartDate").value || null,
@@ -1072,6 +1054,81 @@ document.getElementById("administrationForm")
         document.getElementById("adminEndDate").value || null,
 
       president:
-        document.getElementById("adminPresident").value,
+        document.getElementById("adminPresident").value.trim(),
 
-      general
+      general_secretary:
+        document.getElementById("adminSecretary").value.trim(),
+
+      description:
+        document.getElementById("adminDescription").value.trim()
+
+    };
+
+
+    const result =
+      await supabaseClient
+        .from("administrations")
+        .insert([data]);
+
+
+    if (result.error) {
+
+      showMessage(
+        "administrationMessage",
+        result.error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    showMessage(
+      "administrationMessage",
+      "Administration added successfully.",
+      "success"
+    );
+
+    this.reset();
+
+    await loadAdministrations();
+
+  });
+
+
+/* =========================
+   EXECUTIVES
+========================= */
+
+async function loadExecutives() {
+
+  const result =
+    await supabaseClient
+      .from("executives")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (result.error) {
+
+    console.error("Executive error:", result.error);
+
+    return;
+
+  }
+
+  const records =
+    document.getElementById(
+      "executiveRecords"
+    );
+
+  records.innerHTML = "";
+
+  document.getElementById("executiveCount")
+    .textContent = result.data.length;
+
+
+  if (result.data.length === 0) {
+
+    records.innerHTML 
