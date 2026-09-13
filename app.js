@@ -318,9 +318,86 @@ async function loadAdministrations() {
 
     list.appendChild(card);
   });
+}// ===============================
+// LOAD HISTORY
+// ===============================
+
+async function loadHistory() {
+  const list = document.getElementById("history-list");
+
+  if (!list) {
+    console.error("History list not found.");
+    return;
+  }
+
+  const result = await supabaseClient
+    .from("administrations")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (result.error) {
+    console.error("History error:", result.error);
+
+    list.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>Unable to load history.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  if (!result.data || result.data.length === 0) {
+    list.innerHTML =
+      "<div class='empty-state'>" +
+      "<p>No historical records have been added yet.</p>" +
+      "</div>";
+
+    return;
+  }
+
+  result.data.forEach(function (administration) {
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML =
+      "<h3>" +
+      (administration.name || "Administration") +
+      "</h3>" +
+
+      (administration.session
+        ? "<p><strong>Session:</strong> " +
+          administration.session +
+          "</p>"
+        : "") +
+
+      (administration.president
+        ? "<p><strong>President:</strong> " +
+          administration.president +
+          "</p>"
+        : "") +
+
+      (administration.general_secretary
+        ? "<p><strong>General Secretary:</strong> " +
+          administration.general_secretary +
+          "</p>"
+        : "") +
+
+      (administration.description
+        ? "<p>" +
+          administration.description +
+          "</p>"
+        : "");
+
+    list.appendChild(card);
+  });
 }
 document.addEventListener("DOMContentLoaded", function () {
   loadExecutives();
   loadProgrammes();
+  loadDocuments();
   loadAdministrations();
+  loadHistory();
 });
