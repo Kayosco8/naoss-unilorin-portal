@@ -1,13 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>NAOSS Admin Dashboard</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <style>
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -24,10 +30,11 @@
     header {
       background: #071a52;
       color: white;
-      padding: 20px 7%;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 15px;
     }
 
@@ -37,57 +44,113 @@
 
     header p {
       font-size: 13px;
-      opacity: .85;
+      opacity: 0.85;
     }
 
     button {
       border: none;
-      cursor: pointer;
       border-radius: 7px;
       padding: 11px 16px;
+      cursor: pointer;
       font-weight: bold;
     }
 
-    .logout-btn {
-      background: #dc3545;
+    .primary {
+      background: #071a52;
+      color: white;
+    }
+
+    .green {
+      background: #0b5d3b;
+      color: white;
+    }
+
+    .danger {
+      background: #b42318;
       color: white;
     }
 
     .container {
-      width: 92%;
+      width: 94%;
       max-width: 1200px;
       margin: 30px auto;
     }
 
     .login-box {
       max-width: 450px;
-      margin: 80px auto;
+      margin: 70px auto;
       background: white;
       padding: 30px;
       border-radius: 14px;
-      box-shadow: 0 5px 25px rgba(0,0,0,.08);
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
     }
 
     .login-box h2 {
       color: #071a52;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .login-box p {
       color: #667085;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
-    .dashboard {
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 15px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 7px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .error {
+      display: block;
+      background: #fef3f2;
+      color: #b42318;
+    }
+
+    .success {
+      display: block;
+      background: #ecfdf3;
+      color: #027a48;
+    }
+
+    #dashboard {
       display: none;
     }
 
     .welcome {
       background: white;
-      padding: 25px;
+      padding: 22px;
       border-radius: 12px;
       margin-bottom: 25px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
     }
 
     .welcome h2 {
@@ -97,7 +160,8 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns:
+        repeat(auto-fit, minmax(160px, 1fr));
       gap: 15px;
       margin-bottom: 30px;
     }
@@ -105,8 +169,8 @@
     .stat {
       background: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+      border-radius: 10px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
     }
 
     .stat h3 {
@@ -114,1021 +178,166 @@
       color: #0b5d3b;
     }
 
-    .stat p {
-      color: #667085;
-      font-size: 14px;
-    }
-
     .section {
       background: white;
       padding: 25px;
       border-radius: 12px;
       margin-bottom: 25px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+      box-shadow: 0 3px 15px rgba(0,0,0,0.05);
     }
 
     .section h2 {
       color: #071a52;
       margin-bottom: 20px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #eaecf0;
       padding-bottom: 10px;
     }
 
-    form {
+    .grid {
       display: grid;
-      gap: 12px;
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d0d5dd;
-      border-radius: 7px;
-      font-family: inherit;
-      font-size: 14px;
-      background: white;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: bold;
-      color: #344054;
-    }
-
-    .submit-btn {
-      background: #0b5d3b;
-      color: white;
-      margin-top: 5px;
-    }
-
-    .records {
-      margin-top: 25px;
-      display: grid;
-      gap: 12px;
+      grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+      gap: 15px;
     }
 
     .record {
-      border: 1px solid #e4e7ec;
-      padding: 18px;
+      border: 1px solid #eaecf0;
       border-radius: 9px;
-      background: #fafafa;
+      padding: 16px;
+      background: white;
     }
 
     .record h3 {
       color: #0b5d3b;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }
 
     .record p {
-      margin: 4px 0;
+      margin-bottom: 5px;
       font-size: 14px;
     }
 
-    .delete-btn {
-      background: #dc3545;
-      color: white;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-
-    .message {
-      padding: 12px;
-      border-radius: 7px;
-      margin-top: 10px;
-      display: none;
-      font-size: 14px;
-    }
-
-    .success {
-      background: #d1fae5;
-      color: #065f46;
-    }
-
-    .error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-    .photo-preview {
+    .record img {
       width: 100px;
       height: 100px;
       object-fit: cover;
       border-radius: 50%;
-      display: none;
-      margin-top: 10px;
+      display: block;
+      margin-bottom: 12px;
     }
 
-    .small-note {
-      font-size: 12px;
-      color: #667085;
+    .actions {
+      margin-top: 12px;
     }
 
-    .loading {
-      color: #667085;
-      padding: 10px 0;
-    }
+    @media (max-width: 600px) {
 
-    @media(max-width:700px) {
       header {
-        flex-direction: column;
         align-items: flex-start;
-      }
-
-      .container {
-        width: 94%;
       }
 
       .section {
         padding: 18px;
       }
+
     }
+
   </style>
+
 </head>
 
 <body>
 
+
 <header>
+
   <div>
-    <h1>NAOSS Admin Dashboard</h1>
-    <p>Digital Administrative Archive — University of Ilorin Chapter</p>
+
+    <h1>
+      NAOSS Admin Dashboard
+    </h1>
+
+    <p>
+      Digital Administrative Archive —
+      University of Ilorin Chapter
+    </p>
+
   </div>
 
-  <button class="logout-btn" id="logoutBtn">Logout</button>
+  <button
+    id="logoutBtn"
+    class="danger"
+  >
+    Logout
+  </button>
+
 </header>
 
 
-<!-- LOGIN -->
-
-<div id="loginSection" class="login-box">
-
-  <h2>Admin Login</h2>
-
-  <p>
-    Sign in to manage NAOSS administrative records.
-  </p>
-
-  <form id="loginForm">
-
-    <label>Email</label>
-
-    <input
-      type="email"
-      id="loginEmail"
-      placeholder="Admin email"
-      required
-    >
-
-    <label>Password</label>
-
-    <input
-      type="password"
-      id="loginPassword"
-      placeholder="Password"
-      required
-    >
-
-    <button class="submit-btn" type="submit">
-      Login
-    </button>
-
-  </form>
-
-  <div id="loginMessage" class="message"></div>
-
-</div>
-
-
-<!-- DASHBOARD -->
-
-<div id="dashboard" class="dashboard">
-
-<div class="container">
-
-<div class="welcome">
-  <h2>Welcome, Administrator 👋</h2>
-  <p>
-    Manage the NAOSS Unilorin Digital Administrative Archive from here.
-  </p>
-</div>
-
-
-<!-- STATISTICS -->
-
-<div class="stats">
-
-  <div class="stat">
-    <h3 id="adminCount">0</h3>
-    <p>Administrations</p>
-  </div>
-
-  <div class="stat">
-    <h3 id="executiveCount">0</h3>
-    <p>Executives</p>
-  </div>
-
-  <div class="stat">
-    <h3 id="meetingCount">0</h3>
-    <p>Meetings</p>
-  </div>
-
-  <div class="stat">
-    <h3 id="programmeCount">0</h3>
-    <p>Programmes</p>
-  </div>
-
-  <div class="stat">
-    <h3 id="documentCount">0</h3>
-    <p>Documents</p>
-  </div>
-
-  <div class="stat">
-    <h3 id="reportCount">0</h3>
-    <p>Reports</p>
-  </div>
-
-</div>
-
-
-<!-- ADMINISTRATIONS -->
-
-<div class="section">
-
-<h2>🏛️ Administrations</h2>
-
-<form id="administrationForm">
-
-<label>Administration Name</label>
-<input id="adminName" placeholder="e.g. Prestige Era" required>
-
-<label>Session</label>
-<input id="adminSession" placeholder="e.g. 2026/2027" required>
-
-<label>Start Date</label>
-<input type="date" id="adminStartDate">
-
-<label>End Date</label>
-<input type="date" id="adminEndDate">
-
-<label>President</label>
-<input id="adminPresident" placeholder="President's name">
-
-<label>General Secretary</label>
-<input id="adminSecretary" placeholder="General Secretary's name">
-
-<label>Description</label>
-<textarea id="adminDescription"
-  placeholder="Description of the administration"></textarea>
-
-<button class="submit-btn" type="submit">
-  Add Administration
-</button>
-
-</form>
-
-<div id="administrationMessage" class="message"></div>
-
-<div id="administrationRecords" class="records"></div>
-
-</div>
-
-
-<!-- EXECUTIVES -->
-
-<div class="section">
-
-<h2>👥 Executive Council</h2>
-
-<form id="executiveForm">
-
-<label>Administration</label>
-<select id="executiveAdministration" required></select>
-
-<label>Full Name</label>
-<input id="executiveName" placeholder="Full name" required>
-
-<label>Position</label>
-<input id="executivePosition" placeholder="e.g. President" required>
-
-<label>Department</label>
-<input id="executiveDepartment" placeholder="Department">
-
-<label>Level</label>
-<input id="executiveLevel" placeholder="e.g. 400">
-
-<label>Passport / Executive Photo</label>
-
-<input
-  type="file"
-  id="executivePhoto"
-  accept="image/*"
+<div
+  id="loginSection"
+  class="container"
 >
 
-<img
-  id="photoPreview"
-  class="photo-preview"
-  alt="Photo preview"
->
+  <div class="login-box">
 
-<p class="small-note">
-  Photos will be uploaded to the existing executive-photos storage bucket.
-</p>
+    <h2>
+      Admin Login
+    </h2>
 
-<button class="submit-btn" type="submit">
-  Add Executive
-</button>
+    <p>
+      Sign in to manage NAOSS
+      administrative records.
+    </p>
 
-</form>
+    <div
+      id="loginMessage"
+      class="message"
+    ></div>
 
-<div id="executiveMessage" class="message"></div>
+    <form id="loginForm">
 
-<div id="executiveRecords" class="records"></div>
+      <div class="form-group">
 
-</div>
+        <label>
+          Admin Email
+        </label>
 
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Enter admin email"
+          required
+        >
 
-<!-- MEETINGS -->
+      </div>
 
-<div class="section">
+      <div class="form-group">
 
-<h2>📅 Meetings</h2>
+        <label>
+          Password
+        </label>
 
-<form id="meetingForm">
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Enter password"
+          required
+        >
 
-<label>Administration</label>
-<select id="meetingAdministration" required></select>
-
-<label>Meeting Title</label>
-<input id="meetingTitle"
-  placeholder="e.g. Second CEC Meeting"
-  required>
-
-<label>Meeting Date</label>
-<input type="date" id="meetingDate">
-
-<label>Meeting Time</label>
-<input id="meetingTime" placeholder="e.g. 6:30 PM">
-
-<label>Venue</label>
-<input id="meetingVenue"
-  placeholder="e.g. Google Meet / NAOSS Secretariat">
-
-<label>Agenda</label>
-<textarea id="meetingAgenda"></textarea>
-
-<label>Minutes</label>
-<textarea id="meetingMinutes"></textarea>
-
-<label>Resolutions</label>
-<textarea id="meetingResolutions"></textarea>
-
-<label>Action Points</label>
-<textarea id="meetingActionPoints"></textarea>
-
-<button class="submit-btn" type="submit">
-  Add Meeting
-</button>
-
-</form>
-
-<div id="meetingMessage" class="message"></div>
-
-<div id="meetingRecords" class="records"></div>
-
-</div>
-
-
-<!-- PROGRAMMES -->
-
-<div class="section">
-
-<h2>🎯 Programmes & Activities</h2>
-
-<form id="programmeForm">
-
-<label>Administration</label>
-<select id="programmeAdministration" required></select>
-
-<label>Programme Title</label>
-<input id="programmeTitle"
-  placeholder="Programme title"
-  required>
-
-<label>Theme</label>
-<input id="programmeTheme"
-  placeholder="Programme theme">
-
-<label>Programme Date</label>
-<input type="date" id="programmeDate">
-
-<label>Venue</label>
-<input id="programmeVenue"
-  placeholder="Programme venue">
-
-<label>Objectives</label>
-<textarea id="programmeObjectives"></textarea>
-
-<label>Report</label>
-<textarea id="programmeReport"></textarea>
-
-<label>Outcome</label>
-<textarea id="programmeOutcome"></textarea>
-
-<button class="submit-btn" type="submit">
-  Add Programme
-</button>
-
-</form>
-
-<div id="programmeMessage" class="message"></div>
-
-<div id="programmeRecords" class="records"></div>
-
-</div>
-
-
-<!-- DOCUMENTS -->
-
-<div class="section">
-
-<h2>📄 Documents & Records</h2>
-
-<form id="documentForm">
-
-<label>Administration</label>
-<select id="documentAdministration" required></select>
-
-<label>Document Title</label>
-<input id="documentTitle"
-  placeholder="e.g. Constitution"
-  required>
-
-<label>Document Type</label>
-<input id="documentType"
-  placeholder="e.g. Constitution, Notice, Minutes">
-
-<label>File URL</label>
-<input id="documentFileUrl"
-  placeholder="Paste document link">
-
-<label>Description</label>
-<textarea id="documentDescription"></textarea>
-
-<button class="submit-btn" type="submit">
-  Add Document
-</button>
-
-</form>
-
-<div id="documentMessage" class="message"></div>
-
-<div id="documentRecords" class="records"></div>
-
-</div>
-
-
-<!-- REPORTS -->
-
-<div class="section">
-
-<h2>📝 Reports</h2>
-
-<form id="reportForm">
-
-<label>Administration</label>
-<select id="reportAdministration" required></select>
-
-<label>Report Title</label>
-<input id="reportTitle"
-  placeholder="Report title"
-  required>
-
-<label>Report Type</label>
-<input id="reportType"
-  placeholder="e.g. Programme Report">
-
-<label>Report Date</label>
-<input type="date" id="reportDate">
-
-<label>Report Content</label>
-<textarea id="reportContent"></textarea>
-
-<label>File URL</label>
-<input id="reportFileUrl"
-  placeholder="Paste report file link if available">
-
-<button class="submit-btn" type="submit">
-  Add Report
-</button>
-
-</form>
-
-<div id="reportMessage" class="message"></div>
-
-<div id="reportRecords" class="records"></div>
-
-</div>
-
-
-<!-- HISTORY -->
-
-<div class="section">
-
-<h2>📚 NAOSS History</h2>
-
-<form id="historyForm">
-
-<label>History Title</label>
-<input id="historyTitle"
-  placeholder="e.g. Establishment of NAOSS Unilorin Chapter"
-  required>
-
-<label>Event Date</label>
-<input type="date" id="historyDate">
-
-<label>Description</label>
-<textarea id="historyDescription"></textarea>
-
-<button class="submit-btn" type="submit">
-  Add Historical Record
-</button>
-
-</form>
-
-<div id="historyMessage" class="message"></div>
-
-<div id="historyRecords" class="records"></div>
-
-</div>
-
-
-<!-- HANDOVER -->
-
-<div class="section">
-
-<h2>🔄 Handover Records</h2>
-
-<form id="handoverForm">
-
-<label>Administration</label>
-<select id="handoverAdministration" required></select>
-
-<label>Handover Title</label>
-<input id="handoverTitle"
-  placeholder="e.g. Prestige Era Handover"
-  required>
-
-<label>Description</label>
-<textarea id="handoverDescription"></textarea>
-
-<label>File URL</label>
-<input id="handoverFileUrl"
-  placeholder="Paste handover document link">
-
-<label>Status</label>
-
-<select id="handoverStatus">
-
-<option value="Pending">Pending</option>
-<option value="Completed">Completed</option>
-<option value="Ongoing">Ongoing</option>
-
-</select>
-
-<button class="submit-btn" type="submit">
-  Add Handover Record
-</button>
-
-</form>
-
-<div id="handoverMessage" class="message"></div>
-
-<div id="handoverRecords" class="records"></div>
-
-</div>
-
-</div>
-</div>
-
-
-<script>
-
-const SUPABASE_URL =
-  "https://tydgxkpvklakqgtctwnj.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mQ";
-
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-
-/* =========================
-   HELPERS
-========================= */
-
-function showMessage(id, text, type) {
-
-  const box = document.getElementById(id);
-
-  if (!box) return;
-
-  box.textContent = text;
-
-  box.className = "message " + type;
-
-  box.style.display = "block";
-
-  setTimeout(function() {
-    box.style.display = "none";
-  }, 5000);
-}
-
-
-function escapeHTML(value) {
-
-  if (value === null || value === undefined) {
-    return "";
-  }
-
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-
-/* =========================
-   AUTHENTICATION
-========================= */
-
-async function checkSession() {
-
-  try {
-
-    const result =
-      await supabaseClient.auth.getSession();
-
-    if (result.error) {
-      console.error(result.error);
-      return;
-    }
-
-    if (result.data.session) {
-
-      document.getElementById("loginSection")
-        .style.display = "none";
-
-      document.getElementById("dashboard")
-        .style.display = "block";
-
-      await loadEverything();
-
-    } else {
-
-      document.getElementById("loginSection")
-        .style.display = "block";
-
-      document.getElementById("dashboard")
-        .style.display = "none";
-
-    }
-
-  } catch (error) {
-
-    console.error("Session error:", error);
-
-  }
-
-}
-
-
-document.getElementById("loginForm")
-  .addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const email =
-      document.getElementById("loginEmail")
-        .value.trim();
-
-    const password =
-      document.getElementById("loginPassword")
-        .value;
-
-    const button =
-      this.querySelector("button");
-
-    button.disabled = true;
-    button.textContent = "Logging in...";
-
-    try {
-
-      const result =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-      if (result.error) {
-
-        showMessage(
-          "loginMessage",
-          result.error.message,
-          "error"
-        );
-
-        return;
-      }
-
-      showMessage(
-        "loginMessage",
-        "Login successful.",
-        "success"
-      );
-
-      document.getElementById("loginSection")
-        .style.display = "none";
-
-      document.getElementById("dashboard")
-        .style.display = "block";
-
-      await loadEverything();
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "loginMessage",
-        "Unable to connect to Supabase.",
-        "error"
-      );
-
-    } finally {
-
-      button.disabled = false;
-      button.textContent = "Login";
-
-    }
-
-  });
-
-
-document.getElementById("logoutBtn")
-  .addEventListener("click", async function() {
-
-    await supabaseClient.auth.signOut();
-
-    location.reload();
-
-  });
-
-
-/* =========================
-   ADMINISTRATIONS
-========================= */
-
-async function loadAdministrations() {
-
-  const result =
-    await supabaseClient
-      .from("administrations")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-  if (result.error) {
-
-    console.error("Administration error:", result.error);
-
-    document.getElementById(
-      "administrationRecords"
-    ).innerHTML =
-      "<p class='loading'>Unable to load administrations.</p>";
-
-    return [];
-
-  }
-
-  const records =
-    document.getElementById(
-      "administrationRecords"
-    );
-
-  records.innerHTML = "";
-
-  document.getElementById("adminCount")
-    .textContent = result.data.length;
-
-
-  if (result.data.length === 0) {
-
-    records.innerHTML =
-      "<p class='loading'>No administrations yet.</p>";
-
-  }
-
-
-  result.data.forEach(function(admin) {
-
-    const div =
-      document.createElement("div");
-
-    div.className = "record";
-
-    div.innerHTML = `
-      <h3>${escapeHTML(admin.name)}</h3>
-
-      <p><strong>Session:</strong>
-        ${escapeHTML(admin.session)}
-      </p>
-
-      <p><strong>President:</strong>
-        ${escapeHTML(admin.president)}
-      </p>
-
-      <p><strong>General Secretary:</strong>
-        ${escapeHTML(admin.general_secretary)}
-      </p>
-
-      <p><strong>Start:</strong>
-        ${escapeHTML(admin.start_date)}
-      </p>
-
-      <p><strong>End:</strong>
-        ${escapeHTML(admin.end_date)}
-      </p>
-
-      <p>${escapeHTML(admin.description)}</p>
+      </div>
 
       <button
-        class="delete-btn"
-        onclick="deleteRecord('administrations','${admin.id}','administration')">
-        Delete
+        type="submit"
+        id="loginBtn"
+        class="primary"
+        style="width:100%;"
+      >
+        Login
       </button>
-    `;
 
-    records.appendChild(div);
+    </form>
 
-  });
+  </div>
 
-
-  populateAdministrationSelects(result.data);
-
-  return result.data;
-
-}
-
-
-function populateAdministrationSelects(data) {
-
-  const ids = [
-    "executiveAdministration",
-    "meetingAdministration",
-    "programmeAdministration",
-    "documentAdministration",
-    "reportAdministration",
-    "handoverAdministration"
-  ];
-
-
-  ids.forEach(function(id) {
-
-    const select =
-      document.getElementById(id);
-
-    if (!select) return;
-
-    select.innerHTML =
-      '<option value="">Select administration</option>';
-
-    data.forEach(function(admin) {
-
-      const option =
-        document.createElement("option");
-
-      option.value = admin.id;
-
-      option.textContent =
-        admin.name + " — " + admin.session;
-
-      select.appendChild(option);
-
-    });
-
-  });
-
-}
-
-
-document.getElementById("administrationForm")
-  .addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const data = {
-
-      name:
-        document.getElementById("adminName").value.trim(),
-
-      session:
-        document.getElementById("adminSession").value.trim(),
-
-      start_date:
-        document.getElementById("adminStartDate").value || null,
-
-      end_date:
-        document.getElementById("adminEndDate").value || null,
-
-      president:
-        document.getElementById("adminPresident").value.trim(),
-
-      general_secretary:
-        document.getElementById("adminSecretary").value.trim(),
-
-      description:
-        document.getElementById("adminDescription").value.trim()
-
-    };
-
-
-    const result =
-      await supabaseClient
-        .from("administrations")
-        .insert([data]);
-
-
-    if (result.error) {
-
-      showMessage(
-        "administrationMessage",
-        result.error.message,
-        "error"
-      );
-
-      return;
-    }
-
-
-    showMessage(
-      "administrationMessage",
-      "Administration added successfully.",
-      "success"
-    );
-
-    this.reset();
-
-    await loadAdministrations();
-
-  });
-
-
-/* =========================
-   EXECUTIVES
-========================= */
-
-async function loadExecutives() {
-
-  const result =
-    await supabaseClient
-      .from("executives")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-  if (result.error) {
-
-    console.error("Executive error:", result.error);
-
-    return;
-
-  }
-
-  const records =
-    document.getElementById(
-      "executiveRecords"
-    );
-
-  records.innerHTML = "";
-
-  document.getElementById("executiveCount")
-    .textContent = result.data.length;
-
-
-  if (result.data.length === 0) {
-
-    records.innerHTML 
+      </div>
