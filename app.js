@@ -255,9 +255,10 @@ async function loadAdministrations() {
   }
 
   const result = await supabaseClient
-    .from("administrations")
-    .select("*")
-    .order("created_at", { ascending: false });
+  .from("administrations")
+  .select("*")
+  .eq("session", "2026/2027")
+  .limit(1);
 
   if (result.error) {
     console.error("Administration error:", result.error);
