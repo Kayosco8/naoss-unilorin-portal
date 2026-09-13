@@ -1,1 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>NAOSS Archive Admin</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+      line-height: 1.6;
+    }
+
+    .header {
+      background: #071a52;
+      color: white;
+      padding: 20px 7%;
+    }
+
+    .header h1 {
+      font-size: 28px;
+    }
+
+    .header p {
+      opacity: 0.8;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 86%;
+      max-width: 1100px;
+      margin: 40px auto;
+    }
+
+    .login-box,
+    .dashboard {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .login-box {
+      max-width: 450px;
+      margin: 60px auto;
+    }
+
+    h2 {
+      color: #071a52;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 15px;
+    }
+
+    button {
+      border: none;
+      padding: 13px 20px;
+      border-radius: 7px;
+      background: #0b5d3b;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .logout {
+      background: #071a52;
+      float: right;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 7px;
+      display: none;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-header h2 {
+      margin-bottom: 0;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 20px;
+    }
+
+    .admin-card {
+      background: #f5f7fa;
+      padding: 25px;
+      border-radius: 10px;
+      border-left: 5px solid #0b5d3b;
+    }
+
+    .admin-card h3 {
+      margin-bottom: 8px;
+      color: #071a52;
+    }
+
+    .admin-card p {
+      color: #667085;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 92%;
+      }
+
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .logout {
+        float: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>NAOSS Archive Admin</h1>
+    <p>University of Ilorin Chapter</p>
+  </header>
+
+
+  <main class="container">
+
+    <!-- LOGIN -->
+
+    <section id="login-section" class="login-box">
+
+      <h2>Admin Login</h2>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+
+        <input
+          type="email"
+          id="email"
+          placeholder="Enter admin email"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+
+        <input
+          type="password"
+          id="password"
+          placeholder="Enter password"
+        >
+      </div>
+
+      <button onclick="login()">
+        Login
+      </button>
+
+      <div id="login-message" class="message"></div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+
+    <section id="dashboard-section" class="dashboard hidden">
+
+      <div class="dashboard-header">
+
+        <div>
+          <h2>Welcome, Admin</h2>
+          <p>Manage the NAOSS Digital Archive.</p>
+        </div>
+
+        <button class="logout" onclick="logout()">
+          Logout
+        </button>
+
+      </div>
+
+
+      <div class="admin-grid">
+
+        <div class="admin-card">
+          <h3>👥 Executives</h3>
+          <p>Manage executive records and pictures.</p>
+        </div>
+
+        <div class="admin-card">
+          <h3>🏛️ Administrations</h3>
+          <p>Manage current and previous administrations.</p>
+        </div>
+
+        <div class="admin-card">
+          <h3>📅 Programmes</h3>
+          <p>Add and manage NAOSS programmes.</p>
+        </div>
+
+        <div class="admin-card">
+          <h3>📁 Documents</h3>
+          <p>Upload and manage official records.</p>
+        </div>
+
+        <div class="admin-card">
+          <h3>📜 History</h3>
+          <p>Preserve important historical records.</p>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- SUPABASE -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://tydgxkpvklakqgtctwnj.supabase.co";
+
+    const SUPABASE_KEY =
+      "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+
+    // ===============================
+    // LOGIN
+    // ===============================
+
+    async function login() {
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      const message =
+        document.getElementById("login-message");
+
+
+      if (!email || !password) {
+
+        message.style.display = "block";
+
+        message.innerText =
+          "Please enter your email and password.";
+
+        return;
+      }
+
+
+      const result =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+
+      if (result.error) {
+
+        message.style.display = "block";
+
+        message.innerText =
+          result.error.message;
+
+        return;
+      }
+
+
+      message.style.display = "none";
+
+      showDashboard();
+
+    }
+
+
+    // ===============================
+    // SHOW DASHBOARD
+    // ===============================
+
+    function showDashboard() {
+
+      document
+        .getElementById("login-section")
+        .classList.add("hidden");
+
+      document
+        .getElementById("dashboard-section")
+        .classList.remove("hidden");
+
+    }
+
+
+    // ===============================
+    // LOGOUT
+    // ===============================
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      document
+        .getElementById("dashboard-section")
+        .classList.add("hidden");
+
+      document
+        .getElementById("login-section")
+        .classList.remove("hidden");
+
+    }
+
+
+    // ===============================
+    // CHECK EXISTING SESSION
+    // ===============================
+
+    async function checkSession() {
+
+      const result =
+        await supabaseClient.auth.getSession();
+
+      if (result.data.session) {
+
+        showDashboard();
+
+      }
+
+    }
+
+
+    checkSession();
+
+  </script>
+
+</body>
+                             </html>
