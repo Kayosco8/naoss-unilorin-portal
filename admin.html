@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>NAOSS Archive Admin</title>
+  <title>NAOSS Admin Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -15,208 +17,240 @@
 
     body {
       font-family: Arial, Helvetica, sans-serif;
-      background: #f5f7fa;
+      background: #f4f6f8;
       color: #172033;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
-    .header {
+    header {
       background: #071a52;
       color: white;
       padding: 20px 7%;
-    }
-
-    .header h1 {
-      font-size: 28px;
-    }
-
-    .header p {
-      opacity: 0.8;
-      font-size: 14px;
-    }
-
-    .container {
-      width: 86%;
-      max-width: 1100px;
-      margin: 40px auto;
-    }
-
-    .login-box,
-    .dashboard {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    }
-
-    .login-box {
-      max-width: 450px;
-      margin: 60px auto;
-    }
-
-    h2 {
-      color: #071a52;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 7px;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d0d5dd;
-      border-radius: 7px;
-      font-size: 15px;
-    }
-
-    button {
-      border: none;
-      padding: 13px 20px;
-      border-radius: 7px;
-      background: #0b5d3b;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .logout {
-      background: #071a52;
-      float: right;
-    }
-
-    .message {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 7px;
-      display: none;
-    }
-
-    .dashboard-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 15px;
-      margin-bottom: 30px;
     }
 
-    .dashboard-header h2 {
-      margin-bottom: 0;
+    header h1 {
+      font-size: 24px;
     }
 
-    .admin-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 20px;
+    header p {
+      font-size: 13px;
+      opacity: .85;
     }
 
-    .admin-card {
-      background: #f5f7fa;
-      padding: 25px;
-      border-radius: 10px;
-      border-left: 5px solid #0b5d3b;
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 7px;
+      padding: 11px 16px;
+      font-weight: bold;
     }
 
-    .admin-card h3 {
-      margin-bottom: 8px;
+    .logout-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1200px;
+      margin: 30px auto;
+    }
+
+    .login-box {
+      max-width: 450px;
+      margin: 80px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 5px 25px rgba(0,0,0,.08);
+    }
+
+    .login-box h2 {
       color: #071a52;
-    }
-
-    .admin-card p {
-      color: #667085;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .management-section {
-      margin-top: 40px;
-      padding-top: 30px;
-      border-top: 2px solid #eaecf0;
-    }
-
-    .management-section h2 {
       margin-bottom: 10px;
     }
 
-    .management-section > p {
+    .login-box p {
       color: #667085;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
-    .executive-form {
-      background: #f5f7fa;
-      padding: 25px;
-      border-radius: 10px;
-      margin-bottom: 30px;
+    .dashboard {
+      display: none;
     }
 
-    .executive-form button {
-      margin-top: 5px;
-    }
-
-    .executive-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-    }
-
-    .executive-item {
+    .welcome {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
-      border: 1px solid #eaecf0;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
     }
 
-    .executive-item h3 {
-      color: #0b5d3b;
+    .welcome h2 {
+      color: #071a52;
       margin-bottom: 5px;
     }
 
-    .executive-item p {
-      margin-bottom: 4px;
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
     }
 
-    .delete-button {
-      background: #b42318;
-      margin-top: 15px;
+    .stat {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
     }
 
-    .success-message {
-      background: #ecfdf3;
-      color: #027a48;
+    .stat h3 {
+      font-size: 28px;
+      color: #0b5d3b;
     }
 
-    .error-message {
-      background: #fef3f2;
-      color: #b42318;
+    .stat p {
+      color: #667085;
+      font-size: 14px;
     }
 
-    @media (max-width: 600px) {
-      .container {
-        width: 92%;
-      }
+    .section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    }
 
-      .dashboard-header {
+    .section h2 {
+      color: #071a52;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 14px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #344054;
+    }
+
+    .submit-btn {
+      background: #0b5d3b;
+      color: white;
+      margin-top: 5px;
+    }
+
+    .submit-btn:hover {
+      opacity: .9;
+    }
+
+    .records {
+      margin-top: 25px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .record {
+      border: 1px solid #e4e7ec;
+      padding: 18px;
+      border-radius: 9px;
+      background: #fafafa;
+    }
+
+    .record h3 {
+      color: #0b5d3b;
+      margin-bottom: 6px;
+    }
+
+    .record p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 7px;
+      margin-top: 10px;
+      display: none;
+      font-size: 14px;
+    }
+
+    .success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .photo-preview {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      display: none;
+      margin-top: 10px;
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: #667085;
+    }
+
+    @media(max-width:700px) {
+      header {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .logout {
-        float: none;
+      .container {
+        width: 94%;
+      }
+
+      .section {
+        padding: 18px;
       }
     }
   </style>
@@ -224,568 +258,820 @@
 
 <body>
 
-  <header class="header">
-    <h1>NAOSS Archive Admin</h1>
-    <p>University of Ilorin Chapter</p>
-  </header>
+<header>
+  <div>
+    <h1>NAOSS Admin Dashboard</h1>
+    <p>Digital Administrative Archive — University of Ilorin Chapter</p>
+  </div>
+
+  <button class="logout-btn" id="logoutBtn">Logout</button>
+</header>
 
 
-  <main class="container">
+<!-- LOGIN -->
 
-    <!-- LOGIN -->
+<div id="loginSection" class="login-box">
 
-    <section id="login-section" class="login-box">
+  <h2>Admin Login</h2>
 
-      <h2>Admin Login</h2>
+  <p>
+    Sign in to manage NAOSS administrative records.
+  </p>
 
-      <div class="form-group">
-        <label for="email">Email Address</label>
+  <form id="loginForm">
 
-        <input
-          type="email"
-          id="email"
-          placeholder="Enter admin email"
-        >
+    <label>Email</label>
+    <input
+      type="email"
+      id="loginEmail"
+      placeholder="Admin email"
+      required
+    >
+
+    <label>Password</label>
+    <input
+      type="password"
+      id="loginPassword"
+      placeholder="Password"
+      required
+    >
+
+    <button class="submit-btn" type="submit">
+      Login
+    </button>
+
+  </form>
+
+  <div id="loginMessage" class="message"></div>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="dashboard">
+
+  <div class="container">
+
+    <div class="welcome">
+      <h2>Welcome, Administrator 👋</h2>
+      <p>Manage the NAOSS Unilorin Digital Administrative Archive from here.</p>
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+      <div class="stat">
+        <h3 id="adminCount">0</h3>
+        <p>Administrations</p>
       </div>
 
-      <div class="form-group">
-        <label for="password">Password</label>
-
-        <input
-          type="password"
-          id="password"
-          placeholder="Enter password"
-        >
+      <div class="stat">
+        <h3 id="executiveCount">0</h3>
+        <p>Executives</p>
       </div>
 
-      <button onclick="login()">
-        Login
-      </button>
+      <div class="stat">
+        <h3 id="meetingCount">0</h3>
+        <p>Meetings</p>
+      </div>
 
-      <div id="login-message" class="message"></div>
+      <div class="stat">
+        <h3 id="programmeCount">0</h3>
+        <p>Programmes</p>
+      </div>
 
-    </section>
+      <div class="stat">
+        <h3 id="documentCount">0</h3>
+        <p>Documents</p>
+      </div>
+
+      <div class="stat">
+        <h3 id="reportCount">0</h3>
+        <p>Reports</p>
+      </div>
+
+    </div>
 
 
-    <!-- DASHBOARD -->
+    <!-- ADMINISTRATIONS -->
 
-    <section id="dashboard-section" class="dashboard hidden">
+    <div class="section">
 
-      <div class="dashboard-header">
+      <h2>🏛️ Administrations</h2>
 
-        <div>
-          <h2>Welcome, Admin</h2>
-          <p>Manage the NAOSS Digital Archive.</p>
-        </div>
+      <form id="administrationForm">
 
-        <button class="logout" onclick="logout()">
-          Logout
+        <label>Administration Name</label>
+        <input
+          id="adminName"
+          placeholder="e.g. Prestige Era"
+          required
+        >
+
+        <label>Session</label>
+        <input
+          id="adminSession"
+          placeholder="e.g. 2026/2027"
+          required
+        >
+
+        <label>Start Date</label>
+        <input
+          type="date"
+          id="adminStartDate"
+        >
+
+        <label>End Date</label>
+        <input
+          type="date"
+          id="adminEndDate"
+        >
+
+        <label>President</label>
+        <input
+          id="adminPresident"
+          placeholder="President's name"
+        >
+
+        <label>General Secretary</label>
+        <input
+          id="adminSecretary"
+          placeholder="General Secretary's name"
+        >
+
+        <label>Description</label>
+        <textarea
+          id="adminDescription"
+          placeholder="Description of the administration"
+        ></textarea>
+
+        <button class="submit-btn" type="submit">
+          Add Administration
         </button>
 
-      </div>
+      </form>
+
+      <div id="administrationMessage" class="message"></div>
+
+      <div id="administrationRecords" class="records"></div>
+
+    </div>
 
 
-      <!-- MAIN ADMIN CARDS -->
 
-      <div class="admin-grid">
+    <!-- EXECUTIVES -->
 
-        <div class="admin-card">
-          <h3>👥 Executives</h3>
-          <p>Manage executive records and pictures.</p>
-        </div>
+    <div class="section">
 
-        <div class="admin-card">
-          <h3>🏛️ Administrations</h3>
-          <p>Manage current and previous administrations.</p>
-        </div>
+      <h2>👥 Executive Council</h2>
 
-        <div class="admin-card">
-          <h3>📅 Programmes</h3>
-          <p>Add and manage NAOSS programmes.</p>
-        </div>
+      <form id="executiveForm">
 
-        <div class="admin-card">
-          <h3>📁 Documents</h3>
-          <p>Upload and manage official records.</p>
-        </div>
+        <label>Administration</label>
+        <select id="executiveAdministration" required></select>
 
-        <div class="admin-card">
-          <h3>📜 History</h3>
-          <p>Preserve important historical records.</p>
-        </div>
+        <label>Full Name</label>
+        <input
+          id="executiveName"
+          placeholder="Full name"
+          required
+        >
 
-      </div>
+        <label>Position</label>
+        <input
+          id="executivePosition"
+          placeholder="e.g. President"
+          required
+        >
 
+        <label>Department</label>
+        <input
+          id="executiveDepartment"
+          placeholder="Department"
+        >
 
-      <!-- EXECUTIVE MANAGEMENT -->
+        <label>Level</label>
+        <input
+          id="executiveLevel"
+          placeholder="e.g. 400"
+        >
 
-      <section class="management-section">
+        <label>Passport / Executive Photo</label>
+        <input
+          type="file"
+          id="executivePhoto"
+          accept="image/*"
+        >
 
-        <h2>👥 Manage Executives</h2>
+        <img
+          id="photoPreview"
+          class="photo-preview"
+          alt="Photo preview"
+        >
 
-        <p>
-          Add and manage members of the NAOSS Executive Council.
+        <p class="small-note">
+          Photos will be uploaded to the existing executive-photos storage bucket.
         </p>
 
+        <button class="submit-btn" type="submit">
+          Add Executive
+        </button>
 
-        <!-- ADD EXECUTIVE FORM -->
+      </form>
 
-        <div class="executive-form">
+      <div id="executiveMessage" class="message"></div>
 
-          <h3 style="margin-bottom:20px;">
-            Add New Executive
-          </h3>
+      <div id="executiveRecords" class="records"></div>
 
-          <div class="form-group">
-            <label for="executive-name">
-              Full Name
-            </label>
+    </div>
 
-            <input
-              type="text"
-              id="executive-name"
-              placeholder="Enter full name"
-            >
-          </div>
 
 
-          <div class="form-group">
-            <label for="executive-position">
-              Position
-            </label>
+    <!-- MEETINGS -->
 
-            <input
-              type="text"
-              id="executive-position"
-              placeholder="e.g. President"
-            >
-          </div>
+    <div class="section">
 
+      <h2>📅 Meetings</h2>
 
-          <div class="form-group">
-            <label for="executive-department">
-              Department
-            </label>
+      <form id="meetingForm">
 
-            <input
-              type="text"
-              id="executive-department"
-              placeholder="Enter department"
-            >
-          </div>
+        <label>Administration</label>
+        <select id="meetingAdministration" required></select>
 
+        <label>Meeting Title</label>
+        <input
+          id="meetingTitle"
+          placeholder="e.g. Second CEC Meeting"
+          required
+        >
 
-          <div class="form-group">
-            <label for="executive-level">
-              Level
-            </label>
+        <label>Meeting Date</label>
+        <input
+          type="date"
+          id="meetingDate"
+        >
 
-            <input
-              type="text"
-              id="executive-level"
-              placeholder="e.g. 400"
-            >
-          </div>
+        <label>Meeting Time</label>
+        <input
+          id="meetingTime"
+          placeholder="e.g. 6:30 PM"
+        >
 
+        <label>Venue</label>
+        <input
+          id="meetingVenue"
+          placeholder="e.g. Google Meet / NAOSS Secretariat"
+        >
 
-          <button onclick="addExecutive()">
-            ➕ Add Executive
-          </button>
+        <label>Agenda</label>
+        <textarea id="meetingAgenda"></textarea>
 
-          <div id="executive-message" class="message"></div>
+        <label>Minutes</label>
+        <textarea id="meetingMinutes"></textarea>
 
-        </div>
+        <label>Resolutions</label>
+        <textarea id="meetingResolutions"></textarea>
 
+        <label>Action Points</label>
+        <textarea id="meetingActionPoints"></textarea>
 
-        <!-- EXISTING EXECUTIVES -->
+        <button class="submit-btn" type="submit">
+          Add Meeting
+        </button>
 
-        <h3 style="margin-bottom:20px;">
-          Current Executives
-        </h3>
+      </form>
 
-        <div id="executive-admin-list" class="executive-list">
-          <p>Loading executives...</p>
-        </div>
+      <div id="meetingMessage" class="message"></div>
 
-      </section>
+      <div id="meetingRecords" class="records"></div>
 
-    </section>
+    </div>
 
-  </main>
 
 
-  <!-- SUPABASE -->
+    <!-- PROGRAMMES -->
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <div class="section">
 
-  <script>
+      <h2>🎯 Programmes & Activities</h2>
 
-    const SUPABASE_URL =
-      "https://tydgxkpvklakqgtctwnj.supabase.co";
+      <form id="programmeForm">
 
-    const SUPABASE_KEY =
-      "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
+        <label>Administration</label>
+        <select id="programmeAdministration" required></select>
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+        <label>Programme Title</label>
+        <input
+          id="programmeTitle"
+          placeholder="Programme title"
+          required
+        >
 
+        <label>Theme</label>
+        <input
+          id="programmeTheme"
+          placeholder="Programme theme"
+        >
 
-    // ===============================
-    // LOGIN
-    // ===============================
+        <label>Programme Date</label>
+        <input
+          type="date"
+          id="programmeDate"
+        >
 
-    async function login() {
+        <label>Venue</label>
+        <input
+          id="programmeVenue"
+          placeholder="Programme venue"
+        >
 
-      const email =
-        document.getElementById("email").value.trim();
+        <label>Objectives</label>
+        <textarea id="programmeObjectives"></textarea>
 
-      const password =
-        document.getElementById("password").value;
+        <label>Report</label>
+        <textarea id="programmeReport"></textarea>
 
-      const message =
-        document.getElementById("login-message");
+        <label>Outcome</label>
+        <textarea id="programmeOutcome"></textarea>
 
+        <button class="submit-btn" type="submit">
+          Add Programme
+        </button>
 
-      if (!email || !password) {
+      </form>
 
-        message.style.display = "block";
+      <div id="programmeMessage" class="message"></div>
 
-        message.innerText =
-          "Please enter your email and password.";
+      <div id="programmeRecords" class="records"></div>
 
-        return;
-      }
+    </div>
 
 
-      const result =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
 
+    <!-- DOCUMENTS -->
 
-      if (result.error) {
+    <div class="section">
 
-        message.style.display = "block";
+      <h2>📄 Documents & Records</h2>
 
-        message.innerText =
-          result.error.message;
+      <form id="documentForm">
 
-        return;
-      }
+        <label>Administration</label>
+        <select id="documentAdministration" required></select>
 
+        <label>Document Title</label>
+        <input
+          id="documentTitle"
+          placeholder="e.g. Constitution"
+          required
+        >
 
-      message.style.display = "none";
+        <label>Document Type</label>
+        <input
+          id="documentType"
+          placeholder="e.g. Constitution, Notice, Minutes"
+        >
 
-      showDashboard();
+        <label>File URL</label>
+        <input
+          id="documentFileUrl"
+          placeholder="Paste document link"
+        >
 
-      loadExecutives();
+        <label>Description</label>
+        <textarea id="documentDescription"></textarea>
 
-    }
+        <button class="submit-btn" type="submit">
+          Add Document
+        </button>
 
+      </form>
 
-    // ===============================
-    // SHOW DASHBOARD
-    // ===============================
+      <div id="documentMessage" class="message"></div>
 
-    function showDashboard() {
+      <div id="documentRecords" class="records"></div>
 
-      document
-        .getElementById("login-section")
-        .classList.add("hidden");
+    </div>
 
-      document
-        .getElementById("dashboard-section")
-        .classList.remove("hidden");
 
-    }
 
+    <!-- REPORTS -->
 
-    // ===============================
-    // LOGOUT
-    // ===============================
+    <div class="section">
 
-    async function logout() {
+      <h2>📝 Reports</h2>
 
-      await supabaseClient.auth.signOut();
+      <form id="reportForm">
 
-      document
-        .getElementById("dashboard-section")
-        .classList.add("hidden");
+        <label>Administration</label>
+        <select id="reportAdministration" required></select>
 
-      document
-        .getElementById("login-section")
-        .classList.remove("hidden");
+        <label>Report Title</label>
+        <input
+          id="reportTitle"
+          placeholder="Report title"
+          required
+        >
 
-    }
+        <label>Report Type</label>
+        <input
+          id="reportType"
+          placeholder="e.g. Programme Report"
+        >
 
+        <label>Report Date</label>
+        <input
+          type="date"
+          id="reportDate"
+        >
 
-    // ===============================
-    // CHECK EXISTING SESSION
-    // ===============================
+        <label>Report Content</label>
+        <textarea id="reportContent"></textarea>
 
-    async function checkSession() {
+        <label>File URL</label>
+        <input
+          id="reportFileUrl"
+          placeholder="Paste report file link if available"
+        >
 
-      const result =
-        await supabaseClient.auth.getSession();
+        <button class="submit-btn" type="submit">
+          Add Report
+        </button>
 
-      if (result.data.session) {
+      </form>
 
-        showDashboard();
+      <div id="reportMessage" class="message"></div>
 
-        loadExecutives();
+      <div id="reportRecords" class="records"></div>
 
-      }
+    </div>
 
-    }
 
 
-    // ===============================
-    // LOAD EXECUTIVES
-    // ===============================
+    <!-- HISTORY -->
 
-    async function loadExecutives() {
+    <div class="section">
 
-      const list =
-        document.getElementById(
-          "executive-admin-list"
-        );
+      <h2>📚 NAOSS History</h2>
 
-      if (!list) return;
+      <form id="historyForm">
 
+        <label>History Title</label>
+        <input
+          id="historyTitle"
+          placeholder="e.g. Establishment of NAOSS Unilorin Chapter"
+          required
+        >
 
-      const result =
-        await supabaseClient
-          .from("executives")
-          .select("*")
-          .order("created_at", {
-            ascending: false
-          });
+        <label>Event Date</label>
+        <input
+          type="date"
+          id="historyDate"
+        >
 
+        <label>Description</label>
+        <textarea id="historyDescription"></textarea>
 
-      if (result.error) {
+        <button class="submit-btn" type="submit">
+          Add Historical Record
+        </button>
 
-        list.innerHTML =
-          "<p>Unable to load executives: " +
-          result.error.message +
-          "</p>";
+      </form>
 
-        return;
-      }
+      <div id="historyMessage" class="message"></div>
 
+      <div id="historyRecords" class="records"></div>
 
-      list.innerHTML = "";
+    </div>
 
 
-      if (!result.data ||
-          result.data.length === 0) {
 
-        list.innerHTML =
-          "<p>No executives found.</p>";
+    <!-- HANDOVER -->
 
-        return;
-      }
+    <div class="section">
 
+      <h2>🔄 Handover Records</h2>
 
-      result.data.forEach(function(executive) {
+      <form id="handoverForm">
 
-        const item =
-          document.createElement("div");
+        <label>Administration</label>
+        <select id="handoverAdministration" required></select>
 
-        item.className =
-          "executive-item";
+        <label>Handover Title</label>
+        <input
+          id="handoverTitle"
+          placeholder="e.g. Prestige Era Handover"
+          required
+        >
 
+        <label>Description</label>
+        <textarea id="handoverDescription"></textarea>
 
-        item.innerHTML =
+        <label>File URL</label>
+        <input
+          id="handoverFileUrl"
+          placeholder="Paste handover document link"
+        >
 
-          "<h3>" +
-          (executive.position || "Executive") +
-          "</h3>" +
+        <label>Status</label>
+        <select id="handoverStatus">
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+          <option value="Ongoing">Ongoing</option>
+        </select>
 
-          "<p><strong>" +
-          (executive.full_name || "") +
-          "</strong></p>" +
+        <button class="submit-btn" type="submit">
+          Add Handover Record
+        </button>
 
-          (
-            executive.department
-              ? "<p>Department: " +
-                executive.department +
-                "</p>"
-              : ""
-          ) +
+      </form>
 
-          (
-            executive.level
-              ? "<p>Level: " +
-                executive.level +
-                "</p>"
-              : ""
-          ) +
+      <div id="handoverMessage" class="message"></div>
 
-          "<button class='delete-button' onclick=\"deleteExecutive('" +
-          executive.id +
-          "')\">" +
-          "Delete" +
-          "</button>";
+      <div id="handoverRecords" class="records"></div>
 
+    </div>
 
-        list.appendChild(item);
+  </div>
 
+</div>
+
+
+
+<script>
+
+const SUPABASE_URL =
+  "https://tydgxkpvklakqgtctwnj.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+
+/* =========================
+   BASIC HELPERS
+========================= */
+
+function showMessage(id, text, type) {
+
+  const box = document.getElementById(id);
+
+  box.textContent = text;
+
+  box.className = "message " + type;
+
+  box.style.display = "block";
+
+  setTimeout(function() {
+    box.style.display = "none";
+  }, 5000);
+}
+
+
+
+function escapeHTML(value) {
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+
+/* =========================
+   AUTHENTICATION
+========================= */
+
+async function checkSession() {
+
+  const result =
+    await supabaseClient.auth.getSession();
+
+  if (result.data.session) {
+
+    document.getElementById("loginSection")
+      .style.display = "none";
+
+    document.getElementById("dashboard")
+      .style.display = "block";
+
+    loadEverything();
+
+  } else {
+
+    document.getElementById("loginSection")
+      .style.display = "block";
+
+    document.getElementById("dashboard")
+      .style.display = "none";
+  }
+}
+
+
+
+document.getElementById("loginForm")
+  .addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const result =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
       });
 
+    if (result.error) {
+
+      showMessage(
+        "loginMessage",
+        result.error.message,
+        "error"
+      );
+
+      return;
     }
 
-
-    // ===============================
-    // ADD EXECUTIVE
-    // ===============================
-
-    async function addExecutive() {
-
-      const name =
-        document
-          .getElementById("executive-name")
-          .value
-          .trim();
-
-      const position =
-        document
-          .getElementById("executive-position")
-          .value
-          .trim();
-
-      const department =
-        document
-          .getElementById("executive-department")
-          .value
-          .trim();
-
-      const level =
-        document
-          .getElementById("executive-level")
-          .value
-          .trim();
-
-      const message =
-        document.getElementById(
-          "executive-message"
-        );
-
-
-      if (!name || !position) {
-
-        message.style.display = "block";
-        message.className =
-          "message error-message";
-
-        message.innerText =
-          "Please enter the executive's name and position.";
-
-        return;
-      }
-
-
-      const result =
-        await supabaseClient
-          .from("executives")
-          .insert([
-            {
-              full_name: name,
-              position: position,
-              department: department,
-              level: level
-            }
-          ]);
-
-
-      if (result.error) {
-
-        message.style.display = "block";
-        message.className =
-          "message error-message";
-
-        message.innerText =
-          "Unable to add executive: " +
-          result.error.message;
-
-        return;
-      }
-
-
-      message.style.display = "block";
-      message.className =
-        "message success-message";
-
-      message.innerText =
-        "Executive added successfully.";
-
-
-      document.getElementById(
-        "executive-name"
-      ).value = "";
-
-      document.getElementById(
-        "executive-position"
-      ).value = "";
-
-      document.getElementById(
-        "executive-department"
-      ).value = "";
-
-      document.getElementById(
-        "executive-level"
-      ).value = "";
-
-
-      loadExecutives();
-
-    }
-
-
-    // ===============================
-    // DELETE EXECUTIVE
-    // ===============================
-
-    async function deleteExecutive(id) {
-
-      const confirmDelete =
-        confirm(
-          "Are you sure you want to delete this executive?"
-        );
-
-
-      if (!confirmDelete) return;
-
-
-      const result =
-        await supabaseClient
-          .from("executives")
-          .delete()
-          .eq("id", id);
-
-
-      if (result.error) {
-
-        alert(
-          "Unable to delete executive: " +
-          result.error.message
-        );
-
-        return;
-      }
-
-
-      loadExecutives();
-
-    }
-
+    showMessage(
+      "loginMessage",
+      "Login successful.",
+      "success"
+    );
 
     checkSession();
 
-  </script>
+  });
 
-</body>
-  </html>
+
+
+document.getElementById("logoutBtn")
+  .addEventListener("click", async function() {
+
+    await supabaseClient.auth.signOut();
+
+    location.reload();
+
+  });
+
+
+
+/* =========================
+   ADMINISTRATIONS
+========================= */
+
+async function loadAdministrations() {
+
+  const result =
+    await supabaseClient
+      .from("administrations")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (result.error) {
+
+    console.error(result.error);
+
+    return;
+  }
+
+  const records =
+    document.getElementById(
+      "administrationRecords"
+    );
+
+  records.innerHTML = "";
+
+  document.getElementById("adminCount")
+    .textContent = result.data.length;
+
+
+  result.data.forEach(function(admin) {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "record";
+
+    div.innerHTML = `
+      <h3>${escapeHTML(admin.name)}</h3>
+
+      <p><strong>Session:</strong>
+        ${escapeHTML(admin.session)}
+      </p>
+
+      <p><strong>President:</strong>
+        ${escapeHTML(admin.president)}
+      </p>
+
+      <p><strong>General Secretary:</strong>
+        ${escapeHTML(admin.general_secretary)}
+      </p>
+
+      <p>${escapeHTML(admin.description)}</p>
+
+      <button
+        class="delete-btn"
+        onclick="deleteRecord('administrations','${admin.id}','administration')">
+        Delete
+      </button>
+    `;
+
+    records.appendChild(div);
+
+  });
+
+
+  populateAdministrationSelects(result.data);
+
+}
+
+
+
+function populateAdministrationSelects(data) {
+
+  const ids = [
+    "executiveAdministration",
+    "meetingAdministration",
+    "programmeAdministration",
+    "documentAdministration",
+    "reportAdministration",
+    "handoverAdministration"
+  ];
+
+
+  ids.forEach(function(id) {
+
+    const select =
+      document.getElementById(id);
+
+    if (!select) return;
+
+    select.innerHTML =
+      '<option value="">Select administration</option>';
+
+    data.forEach(function(admin) {
+
+      const option =
+        document.createElement("option");
+
+      option.value = admin.id;
+
+      option.textContent =
+        admin.name + " — " + admin.session;
+
+      select.appendChild(option);
+
+    });
+
+  });
+
+}
+
+
+
+document.getElementById("administrationForm")
+  .addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const data = {
+
+      name:
+        document.getElementById("adminName").value,
+
+      session:
+        document.getElementById("adminSession").value,
+
+      start_date:
+        document.getElementById("adminStartDate").value || null,
+
+      end_date:
+        document.getElementById("adminEndDate").value || null,
+
+      president:
+        document.getElementById("adminPresident").value,
+
+      general
