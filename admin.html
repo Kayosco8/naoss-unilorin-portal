@@ -341,3 +341,684 @@
   </div>
 
       </div>
+<div
+  id="dashboard"
+  class="container"
+>
+
+  <div class="welcome">
+
+    <h2>
+      Welcome to the NAOSS Admin Panel
+    </h2>
+
+    <p>
+      Manage the administrative records of
+      NAOSS Unilorin Chapter from this dashboard.
+    </p>
+
+  </div>
+
+
+  <!-- STATISTICS -->
+
+  <div class="stats">
+
+    <div class="stat">
+      <p>Administrations</p>
+      <h3 id="administrationCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>Executives</p>
+      <h3 id="executiveCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>Meetings</p>
+      <h3 id="meetingCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>Programmes</p>
+      <h3 id="programmeCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>Documents</p>
+      <h3 id="documentCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>Reports</p>
+      <h3 id="reportCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>History</p>
+      <h3 id="historyCount">0</h3>
+    </div>
+
+    <div class="stat">
+      <p>Handover Records</p>
+      <h3 id="handoverCount">0</h3>
+    </div>
+
+  </div>
+
+
+  <!-- ADMINISTRATIONS -->
+
+  <div class="section">
+
+    <h2>
+      Manage Administrations
+    </h2>
+
+    <div
+      id="administrationMessage"
+      class="message"
+    ></div>
+
+    <form id="administrationForm">
+
+      <div class="grid">
+
+        <div class="form-group">
+
+          <label>
+            Administration Name
+          </label>
+
+          <input
+            type="text"
+            id="adminName"
+            placeholder="e.g. Prestige Era"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Session
+          </label>
+
+          <input
+            type="text"
+            id="adminSession"
+            placeholder="e.g. 2026/2027"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Start Date
+          </label>
+
+          <input
+            type="date"
+            id="adminStartDate"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            End Date
+          </label>
+
+          <input
+            type="date"
+            id="adminEndDate"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            President
+          </label>
+
+          <input
+            type="text"
+            id="adminPresident"
+            placeholder="President's full name"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            General Secretary
+          </label>
+
+          <input
+            type="text"
+            id="adminGeneralSecretary"
+            placeholder="General Secretary's full name"
+            required
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Description
+        </label>
+
+        <textarea
+          id="adminDescription"
+          placeholder="Describe this administration..."
+        ></textarea>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="primary"
+      >
+        Add Administration
+      </button>
+
+    </form>
+
+
+    <br>
+
+
+    <div
+      id="administrationRecords"
+      class="grid"
+    ></div>
+
+  </div>
+
+
+  <!-- EXECUTIVES -->
+
+  <div class="section">
+
+    <h2>
+      Manage Executives
+    </h2>
+
+    <div
+      id="executiveMessage"
+      class="message"
+    ></div>
+
+    <form id="executiveForm">
+
+      <div class="grid">
+
+
+        <div class="form-group">
+
+          <label>
+            Administration
+          </label>
+
+          <select
+            id="executiveAdministration"
+            required
+          >
+
+            <option value="">
+              Select Administration
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Full Name
+          </label>
+
+          <input
+            type="text"
+            id="executiveName"
+            placeholder="Executive full name"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Position
+          </label>
+
+          <input
+            type="text"
+            id="executivePosition"
+            placeholder="e.g. President"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Department
+          </label>
+
+          <input
+            type="text"
+            id="executiveDepartment"
+            placeholder="e.g. Social Sciences Education"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Level
+          </label>
+
+          <input
+            type="text"
+            id="executiveLevel"
+            placeholder="e.g. 400"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Passport / Executive Photo
+          </label>
+
+          <input
+            type="file"
+            id="executivePhoto"
+            accept="image/*"
+          >
+
+        </div>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="green"
+      >
+        Add Executive
+      </button>
+
+    </form>
+
+
+    <br>
+
+
+    <div
+      id="executiveRecords"
+      class="grid"
+    ></div>
+
+  </div>
+
+
+  <!-- MEETINGS -->
+
+  <div class="section">
+
+    <h2>
+      Manage Meetings
+    </h2>
+
+    <div
+      id="meetingMessage"
+      class="message"
+    ></div>
+
+    <form id="meetingForm">
+
+      <div class="grid">
+
+        <div class="form-group">
+
+          <label>
+            Administration
+          </label>
+
+          <select
+            id="meetingAdministration"
+            required
+          >
+
+            <option value="">
+              Select Administration
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Meeting Title
+          </label>
+
+          <input
+            type="text"
+            id="meetingTitle"
+            placeholder="e.g. CEC Meeting"
+            required
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Meeting Date
+          </label>
+
+          <input
+            type="date"
+            id="meetingDate"
+            required
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Meeting Time
+          </label>
+
+          <input
+            type="text"
+            id="meetingTime"
+            placeholder="e.g. 6:30 PM"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label>
+            Venue
+          </label>
+
+          <input
+            type="text"
+            id="meetingVenue"
+            placeholder="e.g. Google Meet"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Agenda
+        </label>
+
+        <textarea
+          id="meetingAgenda"
+          placeholder="Meeting agenda..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Minutes
+        </label>
+
+        <textarea
+          id="meetingMinutes"
+          placeholder="Meeting minutes..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Resolutions
+        </label>
+
+        <textarea
+          id="meetingResolutions"
+          placeholder="Resolutions reached..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Action Points
+        </label>
+
+        <textarea
+          id="meetingActionPoints"
+          placeholder="Action points..."
+        ></textarea>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="primary"
+      >
+        Add Meeting
+      </button>
+
+    </form>
+
+
+    <br>
+
+    <div
+      id="meetingRecords"
+      class="grid"
+    ></div>
+
+  </div>
+
+
+  <!-- PROGRAMMES -->
+
+  <div class="section">
+
+    <h2>
+      Manage Programmes
+    </h2>
+
+    <div
+      id="programmeMessage"
+      class="message"
+    ></div>
+
+    <form id="programmeForm">
+
+      <div class="grid">
+
+        <div class="form-group">
+
+          <label>
+            Administration
+          </label>
+
+          <select
+            id="programmeAdministration"
+            required
+          >
+
+            <option value="">
+              Select Administration
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Programme Title
+          </label>
+
+          <input
+            type="text"
+            id="programmeTitle"
+            placeholder="Programme title"
+            required
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Theme
+          </label>
+
+          <input
+            type="text"
+            id="programmeTheme"
+            placeholder="Programme theme"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Programme Date
+          </label>
+
+          <input
+            type="date"
+            id="programmeDate"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Venue
+          </label>
+
+          <input
+            type="text"
+            id="programmeVenue"
+            placeholder="Programme venue"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Objectives
+        </label>
+
+        <textarea
+          id="programmeObjectives"
+          placeholder="Objectives..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Report
+        </label>
+
+        <textarea
+          id="programmeReport"
+          placeholder="Programme report..."
+        ></textarea>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>
+          Outcome
+        </label>
+
+        <textarea
+          id="programmeOutcome"
+          placeholder="Programme outcome..."
+        ></textarea>
+
+      </div>
+
+
+      <button
+        type="submit"
+        class="primary"
+      >
+        Add Programme
+      </button>
+
+    </form>
+
+
+    <br>
+
+    <div
+      id="programmeRecords"
+      class="grid"
+    ></div>
+
+          </div>
