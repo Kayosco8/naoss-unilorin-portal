@@ -171,7 +171,7 @@ async function loadProgrammes() {
   }
 
   const result = await supabaseClient
-  .from("Programmes")
+  .from("programmes")
   .select("*")
   .order("date", { ascending: false });
 
