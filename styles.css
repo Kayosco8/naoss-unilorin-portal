@@ -452,3 +452,229 @@ nav a:hover::after {
 #programme-list .card h3 {
   color: var(--purple);
       }
+ /* ================================
+    LINKS INSIDE CARDS
+    ================================ */
+
+.card a {
+  color: var(--green);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.card a:hover {
+  color: var(--purple);
+  text-decoration: underline;
+}
+
+
+/* ================================
+   DOCUMENT BUTTONS / LINKS
+   ================================ */
+
+#document-list a,
+#programme-list a,
+#history-list a {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--purple);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+#document-list a:hover,
+#programme-list a:hover,
+#history-list a:hover {
+  color: var(--green);
+}
+
+
+/* ================================
+   FOOTER
+   ================================ */
+
+footer {
+  background:
+    linear-gradient(
+      135deg,
+      var(--purple-dark),
+      var(--green-dark)
+    );
+  color: var(--white);
+  text-align: center;
+  padding: 42px 7%;
+  font-size: 14px;
+  position: relative;
+}
+
+footer::before {
+  content: "";
+  display: block;
+  width: 55px;
+  height: 3px;
+  background: var(--gold);
+  margin: 0 auto 18px;
+  border-radius: 5px;
+}
+
+footer p {
+  margin: 4px 0;
+}
+
+footer p:first-of-type {
+  font-weight: 700;
+}
+
+
+/* ================================
+   MOBILE DESIGN
+   ================================ */
+
+@media (max-width: 800px) {
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px 6%;
+    gap: 12px;
+  }
+
+  .logo h1 {
+    font-size: 27px;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px 14px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 3px;
+  }
+
+  nav a {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .hero {
+    min-height: 75vh;
+    padding: 75px 6%;
+  }
+
+  .hero h2 {
+    font-size: clamp(40px, 12vw, 58px);
+    letter-spacing: -1px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .buttons {
+    margin-top: 25px;
+  }
+
+  .btn {
+    padding: 12px 17px;
+    font-size: 13px;
+  }
+
+  .section {
+    padding: 60px 6%;
+  }
+
+  .section h2 {
+    font-size: 28px;
+    margin-bottom: 25px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .card {
+    padding: 23px;
+  }
+
+  .admin-card {
+    padding: 25px;
+  }
+
+  .admin-card h3 {
+    font-size: 24px;
+  }
+}
+
+
+/* ================================
+   SMALL PHONES
+   ================================ */
+
+@media (max-width: 480px) {
+
+  .header {
+    padding: 14px 5%;
+  }
+
+  .logo h1 {
+    font-size: 25px;
+  }
+
+  nav {
+    gap: 7px 12px;
+  }
+
+  nav a {
+    font-size: 11px;
+  }
+
+  .hero {
+    min-height: 78vh;
+    padding: 65px 5%;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+  }
+
+  .hero h2 {
+    font-size: 40px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn {
+    text-align: center;
+  }
+
+  .section {
+    padding: 50px 5%;
+  }
+
+  .section h2 {
+    font-size: 25px;
+  }
+
+  .card {
+    padding: 21px;
+  }
+
+  #executive-list .card img {
+    width: 100px;
+    height: 100px;
+  }
+
+  footer {
+    padding: 35px 5%;
+  }
+}
