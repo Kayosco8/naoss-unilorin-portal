@@ -158,3 +158,223 @@ async function loadExecutives() {
 /* =========================================
    END OF GROUP 1
    ========================================= */
+/* =========================================
+   LOAD PROGRAMMES
+   ========================================= */
+
+async function loadProgrammes() {
+  const section = document.getElementById("programme-list");
+
+  if (!section) {
+    return;
+  }
+
+  section.innerHTML =
+    "<div class='empty-state'>" +
+    "<p>Loading programmes and activities...</p>" +
+    "</div>";
+
+  const result = await supabaseClient
+    .from("programmes")
+    .select("*")
+    .order("programme_date", { ascending: false });
+
+  if (result.error) {
+    console.error("Programme error:", result.error);
+
+    showEmpty(
+      section,
+      "Unable to load programmes."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      section,
+      "No programmes have been archived yet."
+    );
+
+    return;
+  }
+
+  section.innerHTML = "";
+
+  result.data.forEach(function (programme) {
+    const card = document.createElement("div");
+
+    card.className = "card programme-card";
+
+    let dateHTML = "";
+
+    if (programme.programme_date) {
+      dateHTML =
+        "<p><strong>Date:</strong> " +
+        formatDate(programme.programme_date) +
+        "</p>";
+    }
+
+    let venueHTML = "";
+
+    if (programme.venue) {
+      venueHTML =
+        "<p><strong>Venue:</strong> " +
+        escapeHTML(programme.venue) +
+        "</p>";
+    }
+
+    let themeHTML = "";
+
+    if (programme.theme) {
+      themeHTML =
+        "<p><strong>Theme:</strong> " +
+        escapeHTML(programme.theme) +
+        "</p>";
+    }
+
+    let objectiveHTML = "";
+
+    if (programme.objectives) {
+      objectiveHTML =
+        "<p><strong>Objectives:</strong> " +
+        escapeHTML(programme.objectives) +
+        "</p>";
+    }
+
+    let reportHTML = "";
+
+    if (programme.report) {
+      reportHTML =
+        "<p><strong>Report:</strong> " +
+        escapeHTML(programme.report) +
+        "</p>";
+    }
+
+    let outcomeHTML = "";
+
+    if (programme.outcome) {
+      outcomeHTML =
+        "<p><strong>Outcome:</strong> " +
+        escapeHTML(programme.outcome) +
+        "</p>";
+    }
+
+    card.innerHTML =
+      "<h3>" +
+      escapeHTML(
+        programme.title || "NAOSS Programme"
+      ) +
+      "</h3>" +
+
+      themeHTML +
+      dateHTML +
+      venueHTML +
+      objectiveHTML +
+      reportHTML +
+      outcomeHTML;
+
+    section.appendChild(card);
+  });
+}
+
+
+/* =========================================
+   LOAD DOCUMENTS
+   ========================================= */
+
+async function loadDocuments() {
+  const section = document.getElementById("document-list");
+
+  if (!section) {
+    return;
+  }
+
+  section.innerHTML =
+    "<div class='empty-state'>" +
+    "<p>Loading documents...</p>" +
+    "</div>";
+
+  const result = await supabaseClient
+    .from("documents")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (result.error) {
+    console.error("Document error:", result.error);
+
+    showEmpty(
+      section,
+      "Unable to load archived documents."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      section,
+      "No documents have been archived yet."
+    );
+
+    return;
+  }
+
+  section.innerHTML = "";
+
+  result.data.forEach(function (documentRecord) {
+    const card = document.createElement("div");
+
+    card.className = "card document-card";
+
+    let typeHTML = "";
+
+    if (documentRecord.document_type) {
+      typeHTML =
+        "<p><strong>Type:</strong> " +
+        escapeHTML(documentRecord.document_type) +
+        "</p>";
+    }
+
+    let descriptionHTML = "";
+
+    if (documentRecord.description) {
+      descriptionHTML =
+        "<p>" +
+        escapeHTML(documentRecord.description) +
+        "</p>";
+    }
+
+    let linkHTML = "";
+
+    if (documentRecord.file_url) {
+      linkHTML =
+        "<p>" +
+        "<a href='" +
+        escapeHTML(documentRecord.file_url) +
+        "' target='_blank' rel='noopener noreferrer'>" +
+        "View Document" +
+        "</a>" +
+        "</p>";
+    }
+
+    card.innerHTML =
+      "<h3>" +
+      escapeHTML(
+        documentRecord.title ||
+        "Official Document"
+      ) +
+      "</h3>" +
+
+      typeHTML +
+      descriptionHTML +
+      linkHTML;
+
+    section.appendChild(card);
+  });
+}
+
+
+/* =========================================
+   END OF GROUP 2
+   ========================================= */
