@@ -1,6 +1,6 @@
 /* =========================================
    NAOSS UNILORIN DIGITAL ARCHIVE
-   PUBLIC APP — GROUP 1
+   PUBLIC APP
    ========================================= */
 
 const SUPABASE_URL =
@@ -155,9 +155,6 @@ async function loadExecutives() {
 }
 
 
-/* =========================================
-   END OF GROUP 1
-   ========================================= */
 /* =========================================
    LOAD PROGRAMMES
    ========================================= */
@@ -376,9 +373,6 @@ async function loadDocuments() {
 
 
 /* =========================================
-   END OF GROUP 2
-   ========================================= */
-/* =========================================
    LOAD CURRENT ADMINISTRATION
    ========================================= */
 
@@ -400,7 +394,7 @@ async function loadAdministrations() {
     .from("administrations")
     .select("*")
     .eq("session", "2026/2027")
-    .limit(1);
+    .order("created_at", { ascending: false });
 
   if (result.error) {
     console.error(
@@ -432,46 +426,6 @@ async function loadAdministrations() {
 
     card.className = "card admin-card";
 
-    let sessionHTML = "";
-
-    if (administration.session) {
-      sessionHTML =
-        "<p><strong>Session:</strong> " +
-        escapeHTML(administration.session) +
-        "</p>";
-    }
-
-    let presidentHTML = "";
-
-    if (administration.president) {
-      presidentHTML =
-        "<p><strong>President:</strong> " +
-        escapeHTML(administration.president) +
-        "</p>";
-    }
-
-    let secretaryHTML = "";
-
-    if (administration.general_secretary) {
-      secretaryHTML =
-        "<p><strong>General Secretary:</strong> " +
-        escapeHTML(
-          administration.general_secretary
-        ) +
-        "</p>";
-    }
-
-    let descriptionHTML = "";
-
-    if (administration.description) {
-      descriptionHTML =
-        "<p>" +
-        escapeHTML(
-          administration.description
-        ) +
-        "</p>";
-    }
-
     card.innerHTML =
       "<h3>" +
       escapeHTML(
@@ -480,10 +434,33 @@ async function loadAdministrations() {
       ) +
       "</h3>" +
 
-      sessionHTML +
-      presidentHTML +
-      secretaryHTML +
-      descriptionHTML;
+      (administration.session
+        ? "<p><strong>Session:</strong> " +
+          escapeHTML(administration.session) +
+          "</p>"
+        : "") +
+
+      (administration.president
+        ? "<p><strong>President:</strong> " +
+          escapeHTML(administration.president) +
+          "</p>"
+        : "") +
+
+      (administration.general_secretary
+        ? "<p><strong>General Secretary:</strong> " +
+          escapeHTML(
+            administration.general_secretary
+          ) +
+          "</p>"
+        : "") +
+
+      (administration.description
+        ? "<p>" +
+          escapeHTML(
+            administration.description
+          ) +
+          "</p>"
+        : "");
 
     list.appendChild(card);
   });
@@ -543,46 +520,6 @@ async function loadHistory() {
 
     card.className = "card history-card";
 
-    let sessionHTML = "";
-
-    if (administration.session) {
-      sessionHTML =
-        "<p><strong>Session:</strong> " +
-        escapeHTML(administration.session) +
-        "</p>";
-    }
-
-    let presidentHTML = "";
-
-    if (administration.president) {
-      presidentHTML =
-        "<p><strong>President:</strong> " +
-        escapeHTML(administration.president) +
-        "</p>";
-    }
-
-    let secretaryHTML = "";
-
-    if (administration.general_secretary) {
-      secretaryHTML =
-        "<p><strong>General Secretary:</strong> " +
-        escapeHTML(
-          administration.general_secretary
-        ) +
-        "</p>";
-    }
-
-    let descriptionHTML = "";
-
-    if (administration.description) {
-      descriptionHTML =
-        "<p>" +
-        escapeHTML(
-          administration.description
-        ) +
-        "</p>";
-    }
-
     card.innerHTML =
       "<h3>" +
       escapeHTML(
@@ -591,10 +528,33 @@ async function loadHistory() {
       ) +
       "</h3>" +
 
-      sessionHTML +
-      presidentHTML +
-      secretaryHTML +
-      descriptionHTML;
+      (administration.session
+        ? "<p><strong>Session:</strong> " +
+          escapeHTML(administration.session) +
+          "</p>"
+        : "") +
+
+      (administration.president
+        ? "<p><strong>President:</strong> " +
+          escapeHTML(administration.president) +
+          "</p>"
+        : "") +
+
+      (administration.general_secretary
+        ? "<p><strong>General Secretary:</strong> " +
+          escapeHTML(
+            administration.general_secretary
+          ) +
+          "</p>"
+        : "") +
+
+      (administration.description
+        ? "<p>" +
+          escapeHTML(
+            administration.description
+          ) +
+          "</p>"
+        : "");
 
     list.appendChild(card);
   });
@@ -602,24 +562,36 @@ async function loadHistory() {
 
 
 /* =========================================
-   END OF GROUP 3
-   =========================================
+   LOAD COMPLETE ARCHIVE
+   ========================================= */
+
+async function loadArchive() {
+
+  await Promise.all([
+    loadExecutives(),
+    loadProgrammes(),
+    loadDocuments(),
+    loadAdministrations(),
+    loadHistory()
+  ]);
+
+}
+
+
 /* =========================================
-   START NAOSS DIGITAL ARCHIVE
+   START WEBSITE
    ========================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   function () {
-
     loadArchive();
-
   }
 );
 
 
 /* =========================================
-   REFRESH DATA WHEN PAGE BECOMES VISIBLE
+   REFRESH WHEN PAGE BECOMES VISIBLE
    ========================================= */
 
 document.addEventListener(
@@ -651,8 +623,3 @@ window.addEventListener(
 
   }
 );
-
-
-/* =========================================
-   END OF NAOSS PUBLIC APP
-   ========================================= */*/
