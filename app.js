@@ -378,3 +378,281 @@ async function loadDocuments() {
 /* =========================================
    END OF GROUP 2
    ========================================= */
+/* =========================================
+   LOAD CURRENT ADMINISTRATION
+   ========================================= */
+
+async function loadAdministrations() {
+  const list = document.getElementById(
+    "administration-list"
+  );
+
+  if (!list) {
+    return;
+  }
+
+  list.innerHTML =
+    "<div class='empty-state'>" +
+    "<p>Loading current administration...</p>" +
+    "</div>";
+
+  const result = await supabaseClient
+    .from("administrations")
+    .select("*")
+    .eq("session", "2026/2027")
+    .limit(1);
+
+  if (result.error) {
+    console.error(
+      "Administration error:",
+      result.error
+    );
+
+    showEmpty(
+      list,
+      "Unable to load the current administration."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      list,
+      "No current administration has been added yet."
+    );
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  result.data.forEach(function (administration) {
+    const card = document.createElement("div");
+
+    card.className = "card admin-card";
+
+    let sessionHTML = "";
+
+    if (administration.session) {
+      sessionHTML =
+        "<p><strong>Session:</strong> " +
+        escapeHTML(administration.session) +
+        "</p>";
+    }
+
+    let presidentHTML = "";
+
+    if (administration.president) {
+      presidentHTML =
+        "<p><strong>President:</strong> " +
+        escapeHTML(administration.president) +
+        "</p>";
+    }
+
+    let secretaryHTML = "";
+
+    if (administration.general_secretary) {
+      secretaryHTML =
+        "<p><strong>General Secretary:</strong> " +
+        escapeHTML(
+          administration.general_secretary
+        ) +
+        "</p>";
+    }
+
+    let descriptionHTML = "";
+
+    if (administration.description) {
+      descriptionHTML =
+        "<p>" +
+        escapeHTML(
+          administration.description
+        ) +
+        "</p>";
+    }
+
+    card.innerHTML =
+      "<h3>" +
+      escapeHTML(
+        administration.name ||
+        "NAOSS Administration"
+      ) +
+      "</h3>" +
+
+      sessionHTML +
+      presidentHTML +
+      secretaryHTML +
+      descriptionHTML;
+
+    list.appendChild(card);
+  });
+}
+
+
+/* =========================================
+   LOAD NAOSS HISTORY
+   ========================================= */
+
+async function loadHistory() {
+  const list = document.getElementById(
+    "history-list"
+  );
+
+  if (!list) {
+    return;
+  }
+
+  list.innerHTML =
+    "<div class='empty-state'>" +
+    "<p>Loading NAOSS history...</p>" +
+    "</div>";
+
+  const result = await supabaseClient
+    .from("administrations")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (result.error) {
+    console.error(
+      "History error:",
+      result.error
+    );
+
+    showEmpty(
+      list,
+      "Unable to load NAOSS history."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      list,
+      "No historical administrations have been added yet."
+    );
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  result.data.forEach(function (administration) {
+    const card = document.createElement("div");
+
+    card.className = "card history-card";
+
+    let sessionHTML = "";
+
+    if (administration.session) {
+      sessionHTML =
+        "<p><strong>Session:</strong> " +
+        escapeHTML(administration.session) +
+        "</p>";
+    }
+
+    let presidentHTML = "";
+
+    if (administration.president) {
+      presidentHTML =
+        "<p><strong>President:</strong> " +
+        escapeHTML(administration.president) +
+        "</p>";
+    }
+
+    let secretaryHTML = "";
+
+    if (administration.general_secretary) {
+      secretaryHTML =
+        "<p><strong>General Secretary:</strong> " +
+        escapeHTML(
+          administration.general_secretary
+        ) +
+        "</p>";
+    }
+
+    let descriptionHTML = "";
+
+    if (administration.description) {
+      descriptionHTML =
+        "<p>" +
+        escapeHTML(
+          administration.description
+        ) +
+        "</p>";
+    }
+
+    card.innerHTML =
+      "<h3>" +
+      escapeHTML(
+        administration.name ||
+        "NAOSS Administration"
+      ) +
+      "</h3>" +
+
+      sessionHTML +
+      presidentHTML +
+      secretaryHTML +
+      descriptionHTML;
+
+    list.appendChild(card);
+  });
+}
+
+
+/* =========================================
+   END OF GROUP 3
+   =========================================
+/* =========================================
+   START NAOSS DIGITAL ARCHIVE
+   ========================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    loadArchive();
+
+  }
+);
+
+
+/* =========================================
+   REFRESH DATA WHEN PAGE BECOMES VISIBLE
+   ========================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  function () {
+
+    if (
+      document.visibilityState === "visible"
+    ) {
+      loadArchive();
+    }
+
+  }
+);
+
+
+/* =========================================
+   ERROR HANDLING
+   ========================================= */
+
+window.addEventListener(
+  "error",
+  function (event) {
+
+    console.error(
+      "NAOSS Archive Error:",
+      event.error || event.message
+    );
+
+  }
+);
+
+
+/* =========================================
+   END OF NAOSS PUBLIC APP
+   ========================================= */*/
