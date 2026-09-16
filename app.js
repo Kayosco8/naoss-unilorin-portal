@@ -809,15 +809,16 @@ async function loadReports() {
    ========================================= */
 
 async function loadArchive() {
-
   await Promise.all([
     loadExecutives(),
     loadProgrammes(),
     loadDocuments(),
     loadAdministrations(),
-    loadHistory()
+    loadHistory(),
+    loadMeetings(),
+    loadHandoverRecords(),
+    loadReports()
   ]);
-
 }
 
 
