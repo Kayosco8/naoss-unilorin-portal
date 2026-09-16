@@ -16,7 +16,10 @@ const supabaseClient = window.supabase.createClient(
 console.log("NAOSS App.js loaded");
 console.log("Supabase library:", window.supabase);
 console.log("Supabase client:", supabaseClient);
-
+document.body.insertAdjacentHTML(
+  "afterbegin",
+  "<div style='background:#fff3cd;color:#664d03;padding:12px;text-align:center;font-weight:bold;'>NAOSS App.js is running</div>"
+);
 /* =========================================
    HELPER FUNCTIONS
    ========================================= */
