@@ -2,6 +2,19 @@
    NAOSS UNILORIN DIGITAL ARCHIVE
    PUBLIC APP
    ========================================= */
+document.body.insertAdjacentHTML(
+  "afterbegin",
+  "<div style='background:#fff3cd;color:#664d03;padding:12px;text-align:center;font-weight:bold;'>NAOSS JavaScript is running</div>"
+);
+
+if (!window.supabase) {
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    "<div style='background:#f8d7da;color:#842029;padding:12px;text-align:center;font-weight:bold;'>ERROR: Supabase library did not load.</div>"
+  );
+
+  throw new Error("Supabase library did not load.");
+}
 
 const SUPABASE_URL =
   "https://tydgxkpvklakqgtctwnj.supabase.co";
