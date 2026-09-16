@@ -19,7 +19,11 @@
       <a href="#home">Home</a>
       <a href="#administration">Administration</a>
       <a href="#executives">Executives</a>
+      <a href="#meetings">Meetings</a>
       <a href="#programmes">Programmes</a>
+      <a href="#naossite">NAOSSite of the Week</a>
+      <a href="#voting">Voting Records</a>
+      <a href="#handover">Handover</a>
       <a href="#documents">Documents</a>
       <a href="#history">History</a>
     </nav>
@@ -43,7 +47,6 @@
       </div>
     </section>
 
-
     <!-- ADMINISTRATIONS -->
 
     <section id="administration" class="section">
@@ -56,61 +59,111 @@
       </div>
     </section>
 
-
     <!-- EXECUTIVES -->
 
     <section id="executives" class="section">
       <h2>Executive Council</h2>
 
       <div id="executive-list" class="cards">
-        <div class="card">
-          <h3>Loading...</h3>
+        <div class="empty-state">
+          <p>Loading executive council...</p>
         </div>
       </div>
     </section>
 
+    <!-- MEETINGS -->
+
+    <section id="meetings" class="section">
+      <h2>Meetings & Minutes</h2>
+
+      <div id="meeting-list" class="cards">
+        <div class="empty-state">
+          <p>Loading meetings and minutes...</p>
+        </div>
+      </div>
+    </section>
 
     <!-- PROGRAMMES -->
 
     <section id="programmes" class="section">
       <h2>Programmes & Activities</h2>
 
-      <div id="programme-list" class="cards"></div>
+      <div id="programme-list" class="cards">
+        <div class="empty-state">
+          <p>Loading programmes and activities...</p>
+        </div>
+      </div>
     </section>
 
+    <!-- NAOSSITE OF THE WEEK -->
+
+    <section id="naossite" class="section">
+      <h2>NAOSSite of the Week</h2>
+
+      <div id="naossite-list" class="cards">
+        <div class="empty-state">
+          <p>Loading NAOSSite of the Week...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VOTING RECORDS -->
+
+    <section id="voting" class="section">
+      <h2>Voting & Election Records</h2>
+
+      <div id="voting-list" class="cards">
+        <div class="empty-state">
+          <p>Loading voting and election records...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- HANDOVER -->
+
+    <section id="handover" class="section">
+      <h2>Handover Records</h2>
+
+      <div id="handover-list" class="cards">
+        <div class="empty-state">
+          <p>Loading handover records...</p>
+        </div>
+      </div>
+    </section>
 
     <!-- DOCUMENTS -->
 
     <section id="documents" class="section">
-  <h2>Documents & Records</h2>
+      <h2>Documents & Records</h2>
 
-  <div id="document-list" class="cards"></div>
+      <div id="document-list" class="cards">
+        <div class="empty-state">
+          <p>Loading documents...</p>
+        </div>
+      </div>
     </section>
-
 
     <!-- HISTORY -->
 
     <section id="history" class="section">
-  <h2>NAOSS History</h2>
+      <h2>NAOSS History</h2>
 
-  <div id="history-list" class="cards">
-    <div class="empty-state">
-      <p>Loading historical administrations...</p>
-    </div>
-  </div>
-</section>
+      <div id="history-list" class="cards">
+        <div class="empty-state">
+          <p>Loading historical administrations...</p>
+        </div>
+      </div>
+    </section>
 
   </main>
-
 
   <footer>
     <p>© 2026 NAOSS Unilorin Chapter</p>
     <p>Digital Administrative Archive</p>
   </footer>
 
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="App.js"></script>
 
 </body>
-</html>
+          </html>
