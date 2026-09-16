@@ -13,8 +13,6 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-
-
 /* =========================================
    HELPER FUNCTIONS
    ========================================= */
@@ -620,6 +618,3 @@ window.addEventListener(
       "NAOSS Archive Error:",
       event.error || event.message
     );
-
-  }
-);
