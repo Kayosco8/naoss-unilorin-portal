@@ -559,7 +559,250 @@ async function loadHistory() {
     list.appendChild(card);
   });
 }
+/* LOAD MEETINGS */
 
+async function loadMeetings() {
+  const list = document.getElementById("meeting-list");
+
+  if (!list) {
+    return;
+  }
+
+  list.innerHTML =
+    "<div class='empty-state'><p>Loading meetings and minutes...</p></div>";
+
+  const result = await supabaseClient
+    .from("meetings")
+    .select("*")
+    .order("meeting_date", { ascending: false });
+
+  if (result.error) {
+    console.error("Meeting error:", result.error);
+
+    showEmpty(
+      list,
+      "Unable to load meetings and minutes."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      list,
+      "No meeting records have been archived yet."
+    );
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  result.data.forEach(function (meeting) {
+    const card = document.createElement("div");
+
+    card.className = "card meeting-card";
+
+    card.innerHTML =
+      "<h3>" +
+      escapeHTML(meeting.title || "NAOSS Meeting") +
+      "</h3>" +
+
+      (meeting.meeting_date
+        ? "<p><strong>Date:</strong> " +
+          formatDate(meeting.meeting_date) +
+          "</p>"
+        : "") +
+
+      (meeting.meet_time
+        ? "<p><strong>Time:</strong> " +
+          escapeHTML(meeting.meet_time) +
+          "</p>"
+        : "") +
+
+      (meeting.venue
+        ? "<p><strong>Venue:</strong> " +
+          escapeHTML(meeting.venue) +
+          "</p>"
+        : "") +
+
+      (meeting.agenda
+        ? "<p><strong>Agenda:</strong> " +
+          escapeHTML(meeting.agenda) +
+          "</p>"
+        : "") +
+
+      (meeting.minutes
+        ? "<p><strong>Minutes:</strong> " +
+          escapeHTML(meeting.minutes) +
+          "</p>"
+        : "");
+
+    list.appendChild(card);
+  });
+}
+
+
+/* LOAD HANDOVER RECORDS */
+
+async function loadHandoverRecords() {
+  const list = document.getElementById("handover-list");
+
+  if (!list) {
+    return;
+  }
+
+  list.innerHTML =
+    "<div class='empty-state'><p>Loading handover records...</p></div>";
+
+  const result = await supabaseClient
+    .from("handover_records")
+    .select("*")
+    .order("created", { ascending: false });
+
+  if (result.error) {
+    console.error("Handover error:", result.error);
+
+    showEmpty(
+      list,
+      "Unable to load handover records."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      list,
+      "No handover records have been archived yet."
+    );
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  result.data.forEach(function (handover) {
+    const card = document.createElement("div");
+
+    card.className = "card handover-card";
+
+    let fileHTML = "";
+
+    if (handover.file_url) {
+      fileHTML =
+        "<p><a href='" +
+        escapeHTML(handover.file_url) +
+        "' target='_blank' rel='noopener noreferrer'>" +
+        "View Handover Document" +
+        "</a></p>";
+    }
+
+    card.innerHTML =
+      "<h3>Handover Record</h3>" +
+
+      (handover.status
+        ? "<p><strong>Status:</strong> " +
+          escapeHTML(handover.status) +
+          "</p>"
+        : "") +
+
+      (handover.description
+        ? "<p><strong>Details:</strong> " +
+          escapeHTML(handover.description) +
+          "</p>"
+        : "") +
+
+      fileHTML;
+
+    list.appendChild(card);
+  });
+}
+
+
+/* LOAD REPORTS */
+
+async function loadReports() {
+  const list = document.getElementById("report-list");
+
+  if (!list) {
+    return;
+  }
+
+  list.innerHTML =
+    "<div class='empty-state'><p>Loading reports...</p></div>";
+
+  const result = await supabaseClient
+    .from("reports")
+    .select("*")
+    .order("report_date", { ascending: false });
+
+  if (result.error) {
+    console.error("Report error:", result.error);
+
+    showEmpty(
+      list,
+      "Unable to load reports."
+    );
+
+    return;
+  }
+
+  if (!result.data || result.data.length === 0) {
+    showEmpty(
+      list,
+      "No reports have been archived yet."
+    );
+
+    return;
+  }
+
+  list.innerHTML = "";
+
+  result.data.forEach(function (report) {
+    const card = document.createElement("div");
+
+    card.className = "card report-card";
+
+    let fileHTML = "";
+
+    if (report.file_url) {
+      fileHTML =
+        "<p><a href='" +
+        escapeHTML(report.file_url) +
+        "' target='_blank' rel='noopener noreferrer'>" +
+        "View Report File" +
+        "</a></p>";
+    }
+
+    card.innerHTML =
+      "<h3>" +
+      escapeHTML(report.title || "NAOSS Report") +
+      "</h3>" +
+
+      (report.report_type
+        ? "<p><strong>Type:</strong> " +
+          escapeHTML(report.report_type) +
+          "</p>"
+        : "") +
+
+      (report.report_date
+        ? "<p><strong>Date:</strong> " +
+          formatDate(report.report_date) +
+          "</p>"
+        : "") +
+
+      (report.content
+        ? "<p><strong>Report:</strong> " +
+          escapeHTML(report.content) +
+          "</p>"
+        : "") +
+
+      fileHTML;
+
+    list.appendChild(card);
+  });
+}
 
 /* =========================================
    LOAD COMPLETE ARCHIVE
