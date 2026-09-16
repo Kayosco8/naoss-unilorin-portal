@@ -13,7 +13,9 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
-
+console.log("NAOSS App.js loaded");
+console.log("Supabase library:", window.supabase);
+console.log("Supabase client:", supabaseClient);
 
 /* =========================================
    HELPER FUNCTIONS
