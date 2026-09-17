@@ -16,15 +16,12 @@ if (!window.supabase) {
   throw new Error("Supabase library did not load.");
 }
 
-const SUPABASE_URL =
-  "https://tydgxkpvklakqgtctwnj.supabase.co";
+const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
 
-const SUPABASE_KEY =
-  "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mQ";
-
-const supabaseClient = window.supabase.createClient(
+const supabase = window.supabase.createClient(
   SUPABASE_URL,
-  SUPABASE_KEY
+  SUPABASE_ANON_KEY
 );
 console.log("NAOSS App.js loaded");
 console.log("Supabase library:", window.supabase);
