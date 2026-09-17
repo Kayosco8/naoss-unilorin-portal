@@ -889,105 +889,68 @@ async function loadMeetings() {
    ========================================= */
 
 async function loadHandoverRecords() {
+  const container = document.getElementById("handover-list");
 
-  const container =
-    document.getElementById("handover-list") ||
-    document.getElementById("handover") ||
-    document.getElementById("handover-records");
+  if (!container) return;
 
-  if (!container) {
-    console.warn(
-      "Handover container not found."
-    );
-    return;
-  }
-
-  container.innerHTML =
-    "<div class='empty-state'><p>Loading handover records...</p></div>";
+  container.innerHTML = `
+    <div class="empty-state">
+      <p>Loading handover records...</p>
+    </div>
+  `;
 
   const { data, error } = await supabaseClient
     .from("handover_records")
-    .select("*")
-    .order("created", {
-      ascending: false
-    });
+    .select("id, administration_id, title, description, file_url, status, created_at")
+    .order("created_at", { ascending: false });
 
   if (error) {
-    console.error(
-      "Handover error:",
-      error
-    );
+    console.error("Handover records error:", error);
 
-    container.innerHTML =
-      "<div class='empty-state'><p>Unable to load handover records.</p></div>";
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>Unable to load handover records.</p>
+      </div>
+    `;
 
     return;
   }
 
   if (!data || data.length === 0) {
-    showEmpty(
-      container,
-      "No handover records available."
-    );
-
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>No handover records available yet.</p>
+      </div>
+    `;
     return;
   }
 
-  container.innerHTML = data
-    .map(function (handover) {
+  container.innerHTML = data.map(record => `
+    <article class="card handover-card">
+      <h3>${escapeHTML(record.title || "Handover Record")}</h3>
 
-      return `
-        <div class="handover-card">
+      ${record.status ? `
+        <p><strong>Status:</strong> ${escapeHTML(record.status)}</p>
+      ` : ""}
 
-          ${
-            handover.status
-              ? `
-                <p>
-                  <strong>Status:</strong>
-                  ${escapeHTML(
-                    handover.status
-                  )}
-                </p>
-              `
-              : ""
-          }
+      ${record.description ? `
+        <p>${escapeHTML(record.description)}</p>
+      ` : ""}
 
-          ${
-            handover.description
-              ? `
-                <p>
-                  ${escapeHTML(
-                    handover.description
-                  )}
-                </p>
-              `
-              : ""
-          }
+      ${record.created_at ? `
+        <p><strong>Date:</strong> ${formatDate(record.created_at)}</p>
+      ` : ""}
 
-          ${
-            handover.file_url
-              ? `
-                <p>
-                  <a
-                    href="${escapeHTML(
-                      handover.file_url
-                    )}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Handover Record
-                  </a>
-                </p>
-              `
-              : ""
-          }
-
-        </div>
-      `;
-    })
-    .join("");
+      ${record.file_url ? `
+        <p>
+          <a href="${escapeHTML(record.file_url)}" target="_blank" rel="noopener">
+            View Handover Document
+          </a>
+        </p>
+      ` : ""}
+    </article>
+  `).join("");
 }
-
 
 /* =========================================
    LOAD REPORTS
