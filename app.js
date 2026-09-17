@@ -1,3 +1,4 @@
+alert("NAOSS APP.JS IS WORKING");
 /* =========================================
    NAOSS UNILORIN DIGITAL ARCHIVE
    PUBLIC APP
