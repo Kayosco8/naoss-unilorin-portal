@@ -1181,9 +1181,7 @@ async function loadArchive() {
     loadDocuments(),
 
     loadHistory(),
-     
-    loadHandoverRecords()
-     
+       
     loadNAOSSiteOfTheWeek(),
 
     loadVotingRecords()
