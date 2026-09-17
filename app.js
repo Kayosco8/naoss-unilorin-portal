@@ -893,66 +893,75 @@ async function loadHandoverRecords() {
 
   if (!container) return;
 
-  container.innerHTML = `
-    <div class="empty-state">
-      <p>Loading handover records...</p>
-    </div>
-  `;
+  try {
+    const { data, error } = await supabaseClient
+      .from("handover_records")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  const { data, error } = await supabaseClient
-    .from("handover_records")
-    .select("id, administration_id, title, description, file_url, status, created_at")
-    .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Handover error:", error);
+      container.innerHTML = `
+        <div class="empty-state">
+          <p>Unable to load handover records.</p>
+        </div>
+      `;
+      return;
+    }
 
-  if (error) {
-  console.error("Handover records error:", error);
+    if (!data || data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p>No handover records available yet.</p>
+        </div>
+      `;
+      return;
+    }
 
-  container.innerHTML = `
-    <div class="empty-state">
-      <p>Handover Error:</p>
-      <p>${escapeHTML(error.message || "Unknown error")}</p>
-    </div>
-  `;
+    container.innerHTML = data.map(record => {
+      const title = escapeHTML(record.title || "Handover Record");
+      const status = escapeHTML(record.status || "");
+      const description = escapeHTML(record.description || "");
+      const date = record.created_at ? formatDate(record.created_at) : "";
 
-  return;
-  }
+      let fileButton = "";
 
-  if (!data || data.length === 0) {
+      if (record.file_url && record.file_url.trim() !== "") {
+        fileButton = `
+          <a class="document-link"
+             href="${escapeHTML(record.file_url)}"
+             target="_blank"
+             rel="noopener noreferrer">
+             View Handover Document
+          </a>
+        `;
+      }
+
+      return `
+        <article class="card handover-card">
+          <h3>${title}</h3>
+
+          ${status ? `<p><strong>Status:</strong> ${status}</p>` : ""}
+
+          ${date ? `<p><strong>Date:</strong> ${date}</p>` : ""}
+
+          ${description ? `<p>${description}</p>` : ""}
+
+          ${fileButton}
+        </article>
+      `;
+    }).join("");
+
+  } catch (err) {
+    console.error("Unexpected handover error:", err);
+
     container.innerHTML = `
       <div class="empty-state">
-        <p>No handover records available yet.</p>
+        <p>Unable to load handover records.</p>
       </div>
     `;
-    return;
   }
-
-  container.innerHTML = data.map(record => `
-    <article class="card handover-card">
-      <h3>${escapeHTML(record.title || "Handover Record")}</h3>
-
-      ${record.status ? `
-        <p><strong>Status:</strong> ${escapeHTML(record.status)}</p>
-      ` : ""}
-
-      ${record.description ? `
-        <p>${escapeHTML(record.description)}</p>
-      ` : ""}
-
-      ${record.created_at ? `
-        <p><strong>Date:</strong> ${formatDate(record.created_at)}</p>
-      ` : ""}
-
-      ${record.file_url ? `
-        <p>
-          <a href="${escapeHTML(record.file_url)}" target="_blank" rel="noopener">
-            View Handover Document
-          </a>
-        </p>
-      ` : ""}
-    </article>
-  `).join("");
 }
-
 /* =========================================
    LOAD REPORTS
    ========================================= */
