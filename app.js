@@ -79,9 +79,11 @@ function showEmpty(container, message) {
   }
 
   container.innerHTML =
-    "<p style='padding:15px;'>" +
+    "<div class='empty-state'>" +
+    "<p>" +
     escapeHTML(message) +
-    "</p>";
+    "</p>" +
+    "</div>";
 }
 
 
@@ -90,7 +92,9 @@ function showEmpty(container, message) {
    ========================================= */
 
 async function loadExecutives() {
+
   const container =
+    document.getElementById("executive-list") ||
     document.getElementById("executives-list") ||
     document.getElementById("executives");
 
@@ -99,7 +103,8 @@ async function loadExecutives() {
     return;
   }
 
-  container.innerHTML = "<p>Loading executives...</p>";
+  container.innerHTML =
+    "<div class='empty-state'><p>Loading executive council...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("executives")
@@ -112,7 +117,7 @@ async function loadExecutives() {
     console.error("Executives error:", error);
 
     container.innerHTML =
-      "<p>Unable to load executives.</p>";
+      "<div class='empty-state'><p>Unable to load executives.</p></div>";
 
     return;
   }
@@ -128,6 +133,7 @@ async function loadExecutives() {
 
   container.innerHTML = data
     .map(function (executive) {
+
       const photo =
         executive.photo_url ||
         "https://via.placeholder.com/300x300?text=NAOSS";
@@ -144,23 +150,43 @@ async function loadExecutives() {
           >
 
           <h3>
-            ${escapeHTML(executive.full_name)}
+            ${escapeHTML(
+              executive.full_name || "Name not available"
+            )}
           </h3>
 
-          <p>
-            <strong>Position:</strong>
-            ${escapeHTML(executive.position)}
-          </p>
+          ${
+            executive.position
+              ? `
+                <p>
+                  <strong>Position:</strong>
+                  ${escapeHTML(executive.position)}
+                </p>
+              `
+              : ""
+          }
 
-          <p>
-            <strong>Department:</strong>
-            ${escapeHTML(executive.department)}
-          </p>
+          ${
+            executive.department
+              ? `
+                <p>
+                  <strong>Department:</strong>
+                  ${escapeHTML(executive.department)}
+                </p>
+              `
+              : ""
+          }
 
-          <p>
-            <strong>Level:</strong>
-            ${escapeHTML(executive.level)}
-          </p>
+          ${
+            executive.level
+              ? `
+                <p>
+                  <strong>Level:</strong>
+                  ${escapeHTML(executive.level)}
+                </p>
+              `
+              : ""
+          }
 
         </div>
       `;
@@ -174,7 +200,9 @@ async function loadExecutives() {
    ========================================= */
 
 async function loadProgrammes() {
+
   const container =
+    document.getElementById("programme-list") ||
     document.getElementById("programmes-list") ||
     document.getElementById("programmes");
 
@@ -184,7 +212,7 @@ async function loadProgrammes() {
   }
 
   container.innerHTML =
-    "<p>Loading programmes...</p>";
+    "<div class='empty-state'><p>Loading programmes and activities...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("programmes")
@@ -197,7 +225,7 @@ async function loadProgrammes() {
     console.error("Programmes error:", error);
 
     container.innerHTML =
-      "<p>Unable to load programmes.</p>";
+      "<div class='empty-state'><p>Unable to load programmes.</p></div>";
 
     return;
   }
@@ -213,11 +241,14 @@ async function loadProgrammes() {
 
   container.innerHTML = data
     .map(function (programme) {
+
       return `
         <div class="programme-card">
 
           <h3>
-            ${escapeHTML(programme.title)}
+            ${escapeHTML(
+              programme.title || "Programme"
+            )}
           </h3>
 
           ${
@@ -302,7 +333,9 @@ async function loadProgrammes() {
    ========================================= */
 
 async function loadDocuments() {
+
   const container =
+    document.getElementById("document-list") ||
     document.getElementById("documents-list") ||
     document.getElementById("documents");
 
@@ -312,7 +345,7 @@ async function loadDocuments() {
   }
 
   container.innerHTML =
-    "<p>Loading documents...</p>";
+    "<div class='empty-state'><p>Loading documents...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("documents")
@@ -325,7 +358,7 @@ async function loadDocuments() {
     console.error("Documents error:", error);
 
     container.innerHTML =
-      "<p>Unable to load documents.</p>";
+      "<div class='empty-state'><p>Unable to load documents.</p></div>";
 
     return;
   }
@@ -341,11 +374,14 @@ async function loadDocuments() {
 
   container.innerHTML = data
     .map(function (document) {
+
       return `
         <div class="document-card">
 
           <h3>
-            ${escapeHTML(document.title)}
+            ${escapeHTML(
+              document.title || "Document"
+            )}
           </h3>
 
           ${
@@ -396,20 +432,16 @@ async function loadDocuments() {
     })
     .join("");
 }
-
-
 /* =========================================
    LOAD ADMINISTRATIONS
    ========================================= */
 
 async function loadAdministrations() {
+
   const container =
-    document.getElementById(
-      "administrations-list"
-    ) ||
-    document.getElementById(
-      "administrations"
-    );
+    document.getElementById("administration-list") ||
+    document.getElementById("administrations-list") ||
+    document.getElementById("administrations");
 
   if (!container) {
     console.warn(
@@ -419,7 +451,7 @@ async function loadAdministrations() {
   }
 
   container.innerHTML =
-    "<p>Loading administrations...</p>";
+    "<div class='empty-state'><p>Loading administrations...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("administrations")
@@ -435,7 +467,7 @@ async function loadAdministrations() {
     );
 
     container.innerHTML =
-      "<p>Unable to load administrations.</p>";
+      "<div class='empty-state'><p>Unable to load administrations.</p></div>";
 
     return;
   }
@@ -451,42 +483,65 @@ async function loadAdministrations() {
 
   const currentAdministration =
     data.find(function (administration) {
+
       return (
         administration.session ===
         "2026/2027"
       );
+
     });
 
+
   if (currentAdministration) {
+
     container.innerHTML = `
       <div class="administration-card">
 
         <h3>
           ${escapeHTML(
-            currentAdministration.name
+            currentAdministration.name ||
+            "Current Administration"
           )}
         </h3>
 
-        <p>
-          <strong>Session:</strong>
-          ${escapeHTML(
-            currentAdministration.session
-          )}
-        </p>
+        ${
+          currentAdministration.session
+            ? `
+              <p>
+                <strong>Session:</strong>
+                ${escapeHTML(
+                  currentAdministration.session
+                )}
+              </p>
+            `
+            : ""
+        }
 
-        <p>
-          <strong>President:</strong>
-          ${escapeHTML(
-            currentAdministration.president
-          )}
-        </p>
+        ${
+          currentAdministration.president
+            ? `
+              <p>
+                <strong>President:</strong>
+                ${escapeHTML(
+                  currentAdministration.president
+                )}
+              </p>
+            `
+            : ""
+        }
 
-        <p>
-          <strong>General Secretary:</strong>
-          ${escapeHTML(
-            currentAdministration.general_secretary
-          )}
-        </p>
+        ${
+          currentAdministration.general_secretary
+            ? `
+              <p>
+                <strong>General Secretary:</strong>
+                ${escapeHTML(
+                  currentAdministration.general_secretary
+                )}
+              </p>
+            `
+            : ""
+        }
 
         ${
           currentAdministration.description
@@ -502,38 +557,60 @@ async function loadAdministrations() {
 
       </div>
     `;
+
   } else {
+
     container.innerHTML = data
       .map(function (administration) {
+
         return `
           <div class="administration-card">
 
             <h3>
               ${escapeHTML(
-                administration.name
+                administration.name ||
+                "Administration"
               )}
             </h3>
 
-            <p>
-              <strong>Session:</strong>
-              ${escapeHTML(
-                administration.session
-              )}
-            </p>
+            ${
+              administration.session
+                ? `
+                  <p>
+                    <strong>Session:</strong>
+                    ${escapeHTML(
+                      administration.session
+                    )}
+                  </p>
+                `
+                : ""
+            }
 
-            <p>
-              <strong>President:</strong>
-              ${escapeHTML(
-                administration.president
-              )}
-            </p>
+            ${
+              administration.president
+                ? `
+                  <p>
+                    <strong>President:</strong>
+                    ${escapeHTML(
+                      administration.president
+                    )}
+                  </p>
+                `
+                : ""
+            }
 
-            <p>
-              <strong>General Secretary:</strong>
-              ${escapeHTML(
-                administration.general_secretary
-              )}
-            </p>
+            ${
+              administration.general_secretary
+                ? `
+                  <p>
+                    <strong>General Secretary:</strong>
+                    ${escapeHTML(
+                      administration.general_secretary
+                    )}
+                  </p>
+                `
+                : ""
+            }
 
             ${
               administration.description
@@ -560,6 +637,7 @@ async function loadAdministrations() {
    ========================================= */
 
 async function loadHistory() {
+
   const container =
     document.getElementById("history-list") ||
     document.getElementById("history");
@@ -572,7 +650,7 @@ async function loadHistory() {
   }
 
   container.innerHTML =
-    "<p>Loading history...</p>";
+    "<div class='empty-state'><p>Loading history...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("administrations")
@@ -588,7 +666,7 @@ async function loadHistory() {
     );
 
     container.innerHTML =
-      "<p>Unable to load history.</p>";
+      "<div class='empty-state'><p>Unable to load history.</p></div>";
 
     return;
   }
@@ -604,35 +682,55 @@ async function loadHistory() {
 
   container.innerHTML = data
     .map(function (administration) {
+
       return `
         <div class="history-card">
 
           <h3>
             ${escapeHTML(
-              administration.name
+              administration.name ||
+              "Administration"
             )}
           </h3>
 
-          <p>
-            <strong>Session:</strong>
-            ${escapeHTML(
-              administration.session
-            )}
-          </p>
+          ${
+            administration.session
+              ? `
+                <p>
+                  <strong>Session:</strong>
+                  ${escapeHTML(
+                    administration.session
+                  )}
+                </p>
+              `
+              : ""
+          }
 
-          <p>
-            <strong>President:</strong>
-            ${escapeHTML(
-              administration.president
-            )}
-          </p>
+          ${
+            administration.president
+              ? `
+                <p>
+                  <strong>President:</strong>
+                  ${escapeHTML(
+                    administration.president
+                  )}
+                </p>
+              `
+              : ""
+          }
 
-          <p>
-            <strong>General Secretary:</strong>
-            ${escapeHTML(
-              administration.general_secretary
-            )}
-          </p>
+          ${
+            administration.general_secretary
+              ? `
+                <p>
+                  <strong>General Secretary:</strong>
+                  ${escapeHTML(
+                    administration.general_secretary
+                  )}
+                </p>
+              `
+              : ""
+          }
 
           ${
             administration.description
@@ -658,7 +756,9 @@ async function loadHistory() {
    ========================================= */
 
 async function loadMeetings() {
+
   const container =
+    document.getElementById("meeting-list") ||
     document.getElementById("meetings-list") ||
     document.getElementById("meetings");
 
@@ -670,7 +770,7 @@ async function loadMeetings() {
   }
 
   container.innerHTML =
-    "<p>Loading meetings...</p>";
+    "<div class='empty-state'><p>Loading meetings and minutes...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("meetings")
@@ -686,7 +786,7 @@ async function loadMeetings() {
     );
 
     container.innerHTML =
-      "<p>Unable to load meetings.</p>";
+      "<div class='empty-state'><p>Unable to load meetings.</p></div>";
 
     return;
   }
@@ -702,11 +802,14 @@ async function loadMeetings() {
 
   container.innerHTML = data
     .map(function (meeting) {
+
       return `
         <div class="meeting-card">
 
           <h3>
-            ${escapeHTML(meeting.title)}
+            ${escapeHTML(
+              meeting.title || "Meeting"
+            )}
           </h3>
 
           ${
@@ -779,11 +882,14 @@ async function loadMeetings() {
     })
     .join("");
 }
+
+
 /* =========================================
    LOAD HANDOVER RECORDS
    ========================================= */
 
 async function loadHandoverRecords() {
+
   const container =
     document.getElementById("handover-list") ||
     document.getElementById("handover") ||
@@ -797,7 +903,7 @@ async function loadHandoverRecords() {
   }
 
   container.innerHTML =
-    "<p>Loading handover records...</p>";
+    "<div class='empty-state'><p>Loading handover records...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("handover_records")
@@ -813,7 +919,7 @@ async function loadHandoverRecords() {
     );
 
     container.innerHTML =
-      "<p>Unable to load handover records.</p>";
+      "<div class='empty-state'><p>Unable to load handover records.</p></div>";
 
     return;
   }
@@ -829,6 +935,7 @@ async function loadHandoverRecords() {
 
   container.innerHTML = data
     .map(function (handover) {
+
       return `
         <div class="handover-card">
 
@@ -887,7 +994,9 @@ async function loadHandoverRecords() {
    ========================================= */
 
 async function loadReports() {
+
   const container =
+    document.getElementById("report-list") ||
     document.getElementById("reports-list") ||
     document.getElementById("reports");
 
@@ -899,7 +1008,7 @@ async function loadReports() {
   }
 
   container.innerHTML =
-    "<p>Loading reports...</p>";
+    "<div class='empty-state'><p>Loading reports...</p></div>";
 
   const { data, error } = await supabaseClient
     .from("reports")
@@ -915,7 +1024,7 @@ async function loadReports() {
     );
 
     container.innerHTML =
-      "<p>Unable to load reports.</p>";
+      "<div class='empty-state'><p>Unable to load reports.</p></div>";
 
     return;
   }
@@ -931,11 +1040,14 @@ async function loadReports() {
 
   container.innerHTML = data
     .map(function (report) {
+
       return `
         <div class="report-card">
 
           <h3>
-            ${escapeHTML(report.title)}
+            ${escapeHTML(
+              report.title || "Report"
+            )}
           </h3>
 
           ${
@@ -998,171 +1110,4 @@ async function loadReports() {
       `;
     })
     .join("");
-}
-
-
-/* =========================================
-   LOAD NAOSSITE OF THE WEEK
-   ========================================= */
-
-async function loadNAOSSiteOfTheWeek() {
-  const container =
-    document.getElementById(
-      "naossite-list"
-    ) ||
-    document.getElementById(
-      "naossite-of-the-week"
-    ) ||
-    document.getElementById(
-      "naossite"
-    );
-
-  if (!container) {
-    console.warn(
-      "NAOSSite of the Week container not found."
-    );
-    return;
-  }
-
-  container.innerHTML =
-    "<p>Loading NAOSSite of the Week...</p>";
-
-  /*
-     The database table for NAOSSite of the Week
-     has not yet been confirmed in the current
-     Supabase structure.
-
-     We therefore leave this section ready
-     without querying a table that may not exist.
-  */
-
-  showEmpty(
-    container,
-    "NAOSSite of the Week records will appear here."
-  );
-}
-
-
-/* =========================================
-   LOAD VOTING RECORDS
-   ========================================= */
-
-async function loadVotingRecords() {
-  const container =
-    document.getElementById(
-      "voting-list"
-    ) ||
-    document.getElementById(
-      "voting-records"
-    ) ||
-    document.getElementById(
-      "voting"
-    );
-
-  if (!container) {
-    console.warn(
-      "Voting records container not found."
-    );
-    return;
-  }
-
-  container.innerHTML =
-    "<p>Loading voting and election records...</p>";
-
-  /*
-     The voting/election table has not yet
-     been confirmed in the current Supabase
-     database structure.
-
-     We therefore avoid querying a table that
-     may not exist.
-  */
-
-  showEmpty(
-    container,
-    "Voting and election records will appear here."
-  );
-}
-
-
-/* =========================================
-   LOAD COMPLETE ARCHIVE
-   ========================================= */
-
-async function loadArchive() {
-  console.log(
-    "Loading NAOSS Digital Archive..."
-  );
-
-  await Promise.allSettled([
-    loadAdministrations(),
-    loadExecutives(),
-    loadMeetings(),
-    loadProgrammes(),
-    loadReports(),
-    loadHandoverRecords(),
-    loadDocuments(),
-    loadHistory(),
-    loadNAOSSiteOfTheWeek(),
-    loadVotingRecords()
-  ]);
-
-  console.log(
-    "NAOSS Digital Archive loading completed."
-  );
-}
-
-
-/* =========================================
-   START WEBSITE
-   ========================================= */
-
-function startNAOSSApp() {
-  loadArchive();
-}
-
-
-if (
-  document.readyState ===
-  "loading"
-) {
-  document.addEventListener(
-    "DOMContentLoaded",
-    startNAOSSApp
-  );
-} else {
-  startNAOSSApp();
-}
-
-
-/* =========================================
-   REFRESH WHEN PAGE BECOMES VISIBLE
-   ========================================= */
-
-document.addEventListener(
-  "visibilitychange",
-  function () {
-    if (
-      document.visibilityState ===
-      "visible"
-    ) {
-      loadArchive();
-    }
-  }
-);
-
-
-/* =========================================
-   ERROR HANDLING
-   ========================================= */
-
-window.addEventListener(
-  "error",
-  function (event) {
-    console.error(
-      "NAOSS Archive Error:",
-      event.error ||
-        event.message
-    );
-  }
-);
+               }
