@@ -11,9 +11,7 @@
 if (!window.supabase) {
   document.body.insertAdjacentHTML(
     "afterbegin",
-    "<div style='background:#f8d7da;color:#842029;padding:12px;text-align:center;font-weight:bold;'>" +
-    "ERROR: Supabase library did not load." +
-    "</div>"
+    "<div style='background:#f8d7da;color:#842029;padding:12px;text-align:center;font-weight:bold;'>ERROR: Supabase library did not load.</div>"
   );
 
   throw new Error("Supabase library did not load.");
@@ -25,14 +23,13 @@ const SUPABASE_URL =
 
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGd4a3B2a2xha3FndGN0d25qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3ODMwNzUsImV4cCI6MjEwMjM1OTA3NX0.KtqE49SHWz2jDH5dPhPOieI6yBjUleRz3ZgOY3Bmss";
+  "sb_publishable_sIBGFtkZIgg3Y5IjIn_Glg_z9uaU8mA";
 
 
-const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 
 console.log("NAOSS App.js loaded");
@@ -57,21 +54,21 @@ function escapeHTML(value) {
 }
 
 
-function formatDate(dateValue) {
-  if (!dateValue) {
-    return "";
+function formatDate(value) {
+  if (!value) {
+    return "Date not available";
   }
 
-  const date = new Date(dateValue);
+  const date = new Date(value);
 
   if (isNaN(date.getTime())) {
-    return escapeHTML(dateValue);
+    return escapeHTML(value);
   }
 
   return date.toLocaleDateString("en-NG", {
-    day: "numeric",
+    year: "numeric",
     month: "long",
-    year: "numeric"
+    day: "numeric"
   });
 }
 
@@ -82,11 +79,9 @@ function showEmpty(container, message) {
   }
 
   container.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>" +
+    "<p style='padding:15px;'>" +
     escapeHTML(message) +
-    "</p>" +
-    "</div>";
+    "</p>";
 }
 
 
@@ -95,123 +90,78 @@ function showEmpty(container, message) {
    ========================================= */
 
 async function loadExecutives() {
+  const container =
+    document.getElementById("executives-list") ||
+    document.getElementById("executives");
 
-  const list =
-    document.getElementById("executive-list");
-
-  if (!list) {
+  if (!container) {
+    console.warn("Executives container not found.");
     return;
   }
 
-  list.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading executive council...</p>" +
-    "</div>";
+  container.innerHTML = "<p>Loading executives...</p>";
 
-  const result =
-    await supabaseClient
-      .from("executives")
-      .select("*")
-      .order("position", {
-        ascending: true
-      });
+  const { data, error } = await supabaseClient
+    .from("executives")
+    .select("*")
+    .order("position", { ascending: true });
 
-  if (result.error) {
+  if (error) {
+    console.error("Executives error:", error);
 
-    console.error(
-      "Executive error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load executives.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      list,
-      "Unable to load executives."
+      container,
+      "No executive records available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (executive) {
+      const photo =
+        executive.photo_url ||
+        "https://via.placeholder.com/300x300?text=NAOSS";
 
-    showEmpty(
-      list,
-      "No executive records have been added yet."
-    );
+      return `
+        <div class="executive-card">
 
-    return;
-  }
+          <img
+            src="${escapeHTML(photo)}"
+            alt="${escapeHTML(executive.full_name || "Executive")}"
+            class="executive-photo"
+          >
 
-  list.innerHTML = "";
+          <h3>
+            ${escapeHTML(executive.full_name)}
+          </h3>
 
-  result.data.forEach(
-    function (executive) {
+          <p>
+            <strong>Position:</strong>
+            ${escapeHTML(executive.position)}
+          </p>
 
-      const card =
-        document.createElement("div");
+          <p>
+            <strong>Department:</strong>
+            ${escapeHTML(executive.department)}
+          </p>
 
-      card.className =
-        "card executive-card";
+          <p>
+            <strong>Level:</strong>
+            ${escapeHTML(executive.level)}
+          </p>
 
-      let photoHTML = "";
-
-      if (executive.photo_url) {
-
-        photoHTML =
-          "<img src='" +
-          escapeHTML(
-            executive.photo_url
-          ) +
-          "' alt='" +
-          escapeHTML(
-            executive.full_name ||
-            "NAOSS Executive"
-          ) +
-          "'>";
-      }
-
-      card.innerHTML =
-        photoHTML +
-
-        "<h3>" +
-        escapeHTML(
-          executive.position ||
-          "Executive"
-        ) +
-        "</h3>" +
-
-        "<p><strong>" +
-        escapeHTML(
-          executive.full_name ||
-          "Name unavailable"
-        ) +
-        "</strong></p>" +
-
-        (
-          executive.department
-            ? "<p><strong>Department:</strong> " +
-              escapeHTML(
-                executive.department
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          executive.level
-            ? "<p><strong>Level:</strong> " +
-              escapeHTML(
-                executive.level
-              ) +
-              "</p>"
-            : ""
-        );
-
-      list.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
 
 
@@ -220,158 +170,91 @@ async function loadExecutives() {
    ========================================= */
 
 async function loadProgrammes() {
+  const container =
+    document.getElementById("programmes-list") ||
+    document.getElementById("programmes");
 
-  const section =
-    document.getElementById(
-      "programme-list"
-    );
-
-  if (!section) {
+  if (!container) {
+    console.warn("Programmes container not found.");
     return;
   }
 
-  section.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading programmes and activities...</p>" +
-    "</div>";
+  container.innerHTML = "<p>Loading programmes...</p>";
 
-  const result =
-    await supabaseClient
-      .from("programmes")
-      .select("*")
-      .order("programme_date", {
-        ascending: false
-      });
+  const { data, error } = await supabaseClient
+    .from("programmes")
+    .select("*")
+    .order("programme_date", {
+      ascending: false
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("Programmes error:", error);
 
-    console.error(
-      "Programme error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load programmes.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      section,
-      "Unable to load programmes."
+      container,
+      "No programme records available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (programme) {
+      return `
+        <div class="programme-card">
 
-    showEmpty(
-      section,
-      "No programmes have been archived yet."
-    );
+          <h3>
+            ${escapeHTML(programme.title)}
+          </h3>
 
-    return;
-  }
-
-  section.innerHTML = "";
-
-  result.data.forEach(
-    function (programme) {
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "card programme-card";
-
-      let dateHTML = "";
-
-      if (programme.programme_date) {
-
-        dateHTML =
-          "<p><strong>Date:</strong> " +
-          formatDate(
-            programme.programme_date
-          ) +
-          "</p>";
-      }
-
-      let venueHTML = "";
-
-      if (programme.venue) {
-
-        venueHTML =
-          "<p><strong>Venue:</strong> " +
-          escapeHTML(
-            programme.venue
-          ) +
-          "</p>";
-      }
-
-      let themeHTML = "";
-
-      if (programme.theme) {
-
-        themeHTML =
-          "<p><strong>Theme:</strong> " +
-          escapeHTML(
+          ${
             programme.theme
-          ) +
-          "</p>";
-      }
+              ? `<p><strong>Theme:</strong> ${escapeHTML(programme.theme)}</p>`
+              : ""
+          }
 
-      let objectiveHTML = "";
+          ${
+            programme.programme_date
+              ? `<p><strong>Date:</strong> ${formatDate(programme.programme_date)}</p>`
+              : ""
+          }
 
-      if (programme.objectives) {
+          ${
+            programme.venue
+              ? `<p><strong>Venue:</strong> ${escapeHTML(programme.venue)}</p>`
+              : ""
+          }
 
-        objectiveHTML =
-          "<p><strong>Objectives:</strong> " +
-          escapeHTML(
+          ${
             programme.objectives
-          ) +
-          "</p>";
-      }
+              ? `<p><strong>Objectives:</strong> ${escapeHTML(programme.objectives)}</p>`
+              : ""
+          }
 
-      let reportHTML = "";
-
-      if (programme.report) {
-
-        reportHTML =
-          "<p><strong>Report:</strong> " +
-          escapeHTML(
+          ${
             programme.report
-          ) +
-          "</p>";
-      }
+              ? `<p><strong>Report:</strong> ${escapeHTML(programme.report)}</p>`
+              : ""
+          }
 
-      let outcomeHTML = "";
-
-      if (programme.outcome) {
-
-        outcomeHTML =
-          "<p><strong>Outcome:</strong> " +
-          escapeHTML(
+          ${
             programme.outcome
-          ) +
-          "</p>";
-      }
+              ? `<p><strong>Outcome:</strong> ${escapeHTML(programme.outcome)}</p>`
+              : ""
+          }
 
-      card.innerHTML =
-        "<h3>" +
-        escapeHTML(
-          programme.title ||
-          "NAOSS Programme"
-        ) +
-        "</h3>" +
-
-        themeHTML +
-        dateHTML +
-        venueHTML +
-        objectiveHTML +
-        reportHTML +
-        outcomeHTML;
-
-      section.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
 
 
@@ -380,370 +263,239 @@ async function loadProgrammes() {
    ========================================= */
 
 async function loadDocuments() {
+  const container =
+    document.getElementById("documents-list") ||
+    document.getElementById("documents");
 
-  const section =
-    document.getElementById(
-      "document-list"
-    );
-
-  if (!section) {
+  if (!container) {
+    console.warn("Documents container not found.");
     return;
   }
 
-  section.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading documents...</p>" +
-    "</div>";
+  container.innerHTML = "<p>Loading documents...</p>";
 
-  const result =
-    await supabaseClient
-      .from("documents")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
+  const { data, error } = await supabaseClient
+    .from("documents")
+    .select("*")
+    .order("created_at", {
+      ascending: false
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("Documents error:", error);
 
-    console.error(
-      "Document error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load documents.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      section,
-      "Unable to load archived documents."
+      container,
+      "No documents available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (document) {
+      return `
+        <div class="document-card">
 
-    showEmpty(
-      section,
-      "No documents have been archived yet."
-    );
+          <h3>
+            ${escapeHTML(document.title)}
+          </h3>
 
-    return;
-  }
+          ${
+            document.document_type
+              ? `<p><strong>Type:</strong> ${escapeHTML(document.document_type)}</p>`
+              : ""
+          }
 
-  section.innerHTML = "";
+          ${
+            document.description
+              ? `<p>${escapeHTML(document.description)}</p>`
+              : ""
+          }
 
-  result.data.forEach(
-    function (documentRecord) {
+          ${
+            document.file_url
+              ? `
+                <p>
+                  <a
+                    href="${escapeHTML(document.file_url)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Document
+                  </a>
+                </p>
+              `
+              : ""
+          }
 
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "card document-card";
-
-      let typeHTML = "";
-
-      if (
-        documentRecord.document_type
-      ) {
-
-        typeHTML =
-          "<p><strong>Type:</strong> " +
-          escapeHTML(
-            documentRecord.document_type
-          ) +
-          "</p>";
-      }
-
-      let descriptionHTML = "";
-
-      if (
-        documentRecord.description
-      ) {
-
-        descriptionHTML =
-          "<p>" +
-          escapeHTML(
-            documentRecord.description
-          ) +
-          "</p>";
-      }
-
-      let linkHTML = "";
-
-      if (documentRecord.file_url) {
-
-        linkHTML =
-          "<p>" +
-          "<a href='" +
-          escapeHTML(
-            documentRecord.file_url
-          ) +
-          "' target='_blank' rel='noopener noreferrer'>" +
-          "View Document" +
-          "</a>" +
-          "</p>";
-      }
-
-      card.innerHTML =
-        "<h3>" +
-        escapeHTML(
-          documentRecord.title ||
-          "Official Document"
-        ) +
-        "</h3>" +
-
-        typeHTML +
-        descriptionHTML +
-        linkHTML;
-
-      section.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
 
 
 /* =========================================
-   LOAD CURRENT ADMINISTRATION
+   LOAD ADMINISTRATIONS
    ========================================= */
 
 async function loadAdministrations() {
+  const container =
+    document.getElementById("administrations-list") ||
+    document.getElementById("administrations");
 
-  const list =
-    document.getElementById(
-      "administration-list"
-    );
-
-  if (!list) {
+  if (!container) {
+    console.warn("Administrations container not found.");
     return;
   }
 
-  list.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading current administration...</p>" +
-    "</div>";
+  container.innerHTML =
+    "<p>Loading administration...</p>";
 
-  const result =
-    await supabaseClient
-      .from("administrations")
-      .select("*")
-      .eq("session", "2026/2027")
-      .order("created_at", {
-        ascending: false
-      });
+  const { data, error } = await supabaseClient
+    .from("administrations")
+    .select("*")
+    .eq("session", "2026/2027")
+    .order("created_at", {
+      ascending: false
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("Administrations error:", error);
 
-    console.error(
-      "Administration error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load administration.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      list,
-      "Unable to load the current administration."
+      container,
+      "No administration record available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (administration) {
+      return `
+        <div class="administration-card">
 
-    showEmpty(
-      list,
-      "No current administration has been added yet."
-    );
+          <h3>
+            ${escapeHTML(administration.name)}
+          </h3>
 
-    return;
-  }
+          <p>
+            <strong>Session:</strong>
+            ${escapeHTML(administration.session)}
+          </p>
 
-  list.innerHTML = "";
+          <p>
+            <strong>President:</strong>
+            ${escapeHTML(administration.president)}
+          </p>
 
-  result.data.forEach(
-    function (administration) {
+          <p>
+            <strong>General Secretary:</strong>
+            ${escapeHTML(administration.general_secretary)}
+          </p>
 
-      const card =
-        document.createElement("div");
+          ${
+            administration.description
+              ? `<p>${escapeHTML(administration.description)}</p>`
+              : ""
+          }
 
-      card.className =
-        "card admin-card";
-
-      card.innerHTML =
-        "<h3>" +
-        escapeHTML(
-          administration.name ||
-          "NAOSS Administration"
-        ) +
-        "</h3>" +
-
-        (
-          administration.session
-            ? "<p><strong>Session:</strong> " +
-              escapeHTML(
-                administration.session
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          administration.president
-            ? "<p><strong>President:</strong> " +
-              escapeHTML(
-                administration.president
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          administration.general_secretary
-            ? "<p><strong>General Secretary:</strong> " +
-              escapeHTML(
-                administration.general_secretary
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          administration.description
-            ? "<p>" +
-              escapeHTML(
-                administration.description
-              ) +
-              "</p>"
-            : ""
-        );
-
-      list.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
-
-
 /* =========================================
-   LOAD NAOSS HISTORY
+   LOAD HISTORY
    ========================================= */
 
 async function loadHistory() {
+  const container =
+    document.getElementById("history-list") ||
+    document.getElementById("history");
 
-  const list =
-    document.getElementById(
-      "history-list"
-    );
-
-  if (!list) {
+  if (!container) {
+    console.warn("History container not found.");
     return;
   }
 
-  list.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading NAOSS history...</p>" +
-    "</div>";
+  container.innerHTML = "<p>Loading history...</p>";
 
-  const result =
-    await supabaseClient
-      .from("administrations")
-      .select("*")
-      .order("created_at", {
-        ascending: true
-      });
+  const { data, error } = await supabaseClient
+    .from("administrations")
+    .select("*")
+    .order("created_at", {
+      ascending: true
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("History error:", error);
 
-    console.error(
-      "History error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load history.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      list,
-      "Unable to load NAOSS history."
+      container,
+      "No history records available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (administration) {
+      return `
+        <div class="history-card">
 
-    showEmpty(
-      list,
-      "No historical administrations have been added yet."
-    );
+          <h3>
+            ${escapeHTML(administration.name)}
+          </h3>
 
-    return;
-  }
+          <p>
+            <strong>Session:</strong>
+            ${escapeHTML(administration.session)}
+          </p>
 
-  list.innerHTML = "";
+          <p>
+            <strong>President:</strong>
+            ${escapeHTML(administration.president)}
+          </p>
 
-  result.data.forEach(
-    function (administration) {
+          <p>
+            <strong>General Secretary:</strong>
+            ${escapeHTML(administration.general_secretary)}
+          </p>
 
-      const card =
-        document.createElement("div");
+          ${
+            administration.description
+              ? `<p>${escapeHTML(administration.description)}</p>`
+              : ""
+          }
 
-      card.className =
-        "card history-card";
-
-      card.innerHTML =
-        "<h3>" +
-        escapeHTML(
-          administration.name ||
-          "NAOSS Administration"
-        ) +
-        "</h3>" +
-
-        (
-          administration.session
-            ? "<p><strong>Session:</strong> " +
-              escapeHTML(
-                administration.session
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          administration.president
-            ? "<p><strong>President:</strong> " +
-              escapeHTML(
-                administration.president
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          administration.general_secretary
-            ? "<p><strong>General Secretary:</strong> " +
-              escapeHTML(
-                administration.general_secretary
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          administration.description
-            ? "<p>" +
-              escapeHTML(
-                administration.description
-              ) +
-              "</p>"
-            : ""
-        );
-
-      list.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
 
 
@@ -752,129 +504,85 @@ async function loadHistory() {
    ========================================= */
 
 async function loadMeetings() {
+  const container =
+    document.getElementById("meetings-list") ||
+    document.getElementById("meetings");
 
-  const list =
-    document.getElementById(
-      "meeting-list"
-    );
-
-  if (!list) {
+  if (!container) {
+    console.warn("Meetings container not found.");
     return;
   }
 
-  list.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading meetings and minutes...</p>" +
-    "</div>";
+  container.innerHTML = "<p>Loading meetings...</p>";
 
-  const result =
-    await supabaseClient
-      .from("meetings")
-      .select("*")
-      .order("meeting_date", {
-        ascending: false
-      });
+  const { data, error } = await supabaseClient
+    .from("meetings")
+    .select("*")
+    .order("meeting_date", {
+      ascending: false
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("Meetings error:", error);
 
-    console.error(
-      "Meeting error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load meetings.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      list,
-      "Unable to load meetings and minutes."
+      container,
+      "No meeting records available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (meeting) {
+      return `
+        <div class="meeting-card">
 
-    showEmpty(
-      list,
-      "No meeting records have been archived yet."
-    );
+          <h3>
+            ${escapeHTML(meeting.title)}
+          </h3>
 
-    return;
-  }
+          ${
+            meeting.meeting_date
+              ? `<p><strong>Date:</strong> ${formatDate(meeting.meeting_date)}</p>`
+              : ""
+          }
 
-  list.innerHTML = "";
+          ${
+            meeting.meet_time
+              ? `<p><strong>Time:</strong> ${escapeHTML(meeting.meet_time)}</p>`
+              : ""
+          }
 
-  result.data.forEach(
-    function (meeting) {
+          ${
+            meeting.venue
+              ? `<p><strong>Venue:</strong> ${escapeHTML(meeting.venue)}</p>`
+              : ""
+          }
 
-      const card =
-        document.createElement("div");
+          ${
+            meeting.agenda
+              ? `<p><strong>Agenda:</strong> ${escapeHTML(meeting.agenda)}</p>`
+              : ""
+          }
 
-      card.className =
-        "card meeting-card";
+          ${
+            meeting.minutes
+              ? `<p><strong>Minutes:</strong> ${escapeHTML(meeting.minutes)}</p>`
+              : ""
+          }
 
-      card.innerHTML =
-        "<h3>" +
-        escapeHTML(
-          meeting.title ||
-          "NAOSS Meeting"
-        ) +
-        "</h3>" +
-
-        (
-          meeting.meeting_date
-            ? "<p><strong>Date:</strong> " +
-              formatDate(
-                meeting.meeting_date
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          meeting.meet_time
-            ? "<p><strong>Time:</strong> " +
-              escapeHTML(
-                meeting.meet_time
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          meeting.venue
-            ? "<p><strong>Venue:</strong> " +
-              escapeHTML(
-                meeting.venue
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          meeting.agenda
-            ? "<p><strong>Agenda:</strong> " +
-              escapeHTML(
-                meeting.agenda
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          meeting.minutes
-            ? "<p><strong>Minutes:</strong> " +
-              escapeHTML(
-                meeting.minutes
-              ) +
-              "</p>"
-            : ""
-        );
-
-      list.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
 
 
@@ -883,112 +591,81 @@ async function loadMeetings() {
    ========================================= */
 
 async function loadHandoverRecords() {
+  const container =
+    document.getElementById("handover-list") ||
+    document.getElementById("handover") ||
+    document.getElementById("handover-records");
 
-  const list =
-    document.getElementById(
-      "handover-list"
-    );
-
-  if (!list) {
+  if (!container) {
+    console.warn("Handover container not found.");
     return;
   }
 
-  list.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading handover records...</p>" +
-    "</div>";
+  container.innerHTML =
+    "<p>Loading handover records...</p>";
 
-  const result =
-    await supabaseClient
-      .from("handover_records")
-      .select("*")
-      .order("created", {
-        ascending: false
-      });
+  const { data, error } = await supabaseClient
+    .from("handover_records")
+    .select("*")
+    .order("created", {
+      ascending: false
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("Handover error:", error);
 
-    console.error(
-      "Handover error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load handover records.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      list,
-      "Unable to load handover records."
+      container,
+      "No handover records available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (handover) {
+      return `
+        <div class="handover-card">
 
-    showEmpty(
-      list,
-      "No handover records have been archived yet."
-    );
+          ${
+            handover.status
+              ? `<p><strong>Status:</strong> ${escapeHTML(handover.status)}</p>`
+              : ""
+          }
 
-    return;
-  }
+          ${
+            handover.description
+              ? `<p>${escapeHTML(handover.description)}</p>`
+              : ""
+          }
 
-  list.innerHTML = "";
-
-  result.data.forEach(
-    function (handover) {
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "card handover-card";
-
-      let fileHTML = "";
-
-      if (handover.file_url) {
-
-        fileHTML =
-          "<p>" +
-          "<a href='" +
-          escapeHTML(
+          ${
             handover.file_url
-          ) +
-          "' target='_blank' rel='noopener noreferrer'>" +
-          "View Handover Document" +
-          "</a>" +
-          "</p>";
-      }
+              ? `
+                <p>
+                  <a
+                    href="${escapeHTML(handover.file_url)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Handover Record
+                  </a>
+                </p>
+              `
+              : ""
+          }
 
-      card.innerHTML =
-        "<h3>Handover Record</h3>" +
-
-        (
-          handover.status
-            ? "<p><strong>Status:</strong> " +
-              escapeHTML(
-                handover.status
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        (
-          handover.description
-            ? "<p><strong>Details:</strong> " +
-              escapeHTML(
-                handover.description
-              ) +
-              "</p>"
-            : ""
-        ) +
-
-        fileHTML;
-
-      list.appendChild(card);
-    }
-  );
+        </div>
+      `;
+    })
+    .join("");
 }
 
 
@@ -997,132 +674,161 @@ async function loadHandoverRecords() {
    ========================================= */
 
 async function loadReports() {
+  const container =
+    document.getElementById("reports-list") ||
+    document.getElementById("reports");
 
-  const list =
-    document.getElementById(
-      "report-list"
-    );
-
-  if (!list) {
+  if (!container) {
+    console.warn("Reports container not found.");
     return;
   }
 
-  list.innerHTML =
-    "<div class='empty-state'>" +
-    "<p>Loading reports...</p>" +
-    "</div>";
+  container.innerHTML = "<p>Loading reports...</p>";
 
-  const result =
-    await supabaseClient
-      .from("reports")
-      .select("*")
-      .order("report_date", {
-        ascending: false
-      });
+  const { data, error } = await supabaseClient
+    .from("reports")
+    .select("*")
+    .order("report_date", {
+      ascending: false
+    });
 
-  if (result.error) {
+  if (error) {
+    console.error("Reports error:", error);
 
-    console.error(
-      "Report error:",
-      result.error
-    );
+    container.innerHTML =
+      "<p>Unable to load reports.</p>";
 
+    return;
+  }
+
+  if (!data || data.length === 0) {
     showEmpty(
-      list,
-      "Unable to load reports."
+      container,
+      "No reports available."
     );
 
     return;
   }
 
-  if (
-    !result.data ||
-    result.data.length === 0
-  ) {
+  container.innerHTML = data
+    .map(function (report) {
+      return `
+        <div class="report-card">
 
-    showEmpty(
-      list,
-      "No reports have been archived yet."
-    );
+          <h3>
+            ${escapeHTML(report.title)}
+          </h3>
 
-    return;
-  }
+          ${
+            report.report_type
+              ? `<p><strong>Report Type:</strong> ${escapeHTML(report.report_type)}</p>`
+              : ""
+          }
 
-  list.innerHTML = "";
+          ${
+            report.report_date
+              ? `<p><strong>Date:</strong> ${formatDate(report.report_date)}</p>`
+              : ""
+          }
 
-  result.data.forEach(
-    function (report) {
+          ${
+            report.content
+              ? `<p>${escapeHTML(report.content)}</p>`
+              : ""
+          }
 
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "card report-card";
-
-      let fileHTML = "";
-
-      if (report.file_url) {
-
-        fileHTML =
-          "<p>" +
-          "<a href='" +
-          escapeHTML(
+          ${
             report.file_url
-          ) +
-          "' target='_blank' rel='noopener noreferrer'>" +
-          "View Report File" +
-          "</a>" +
-          "</p>";
-      }
+              ? `
+                <p>
+                  <a
+                    href="${escapeHTML(report.file_url)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View Report
+                  </a>
+                </p>
+              `
+              : ""
+          }
 
-      card.innerHTML =
-        "<h3>" +
-        escapeHTML(
-          report.title ||
-          "NAOSS Report"
-        ) +
-        "</h3>" +
+        </div>
+      `;
+    })
+    .join("");
+}
 
-        (
-          report.report_type
-            ? "<p><strong>Type:</strong> " +
-              escapeHTML(
-                report.report_type
-              ) +
-              "</p>"
-            : ""
-        ) +
 
-        (
-          report.report_date
-            ? "<p><strong>Date:</strong> " +
-              formatDate(
-                report.report_date
-              ) +
-              "</p>"
-            : ""
-        ) +
+/* =========================================
+   LOAD COMPLETE ARCHIVE
+   ========================================= */
 
-        (
-          report.content
-            ? "<p><strong>Report:</strong> " +
-              escapeHTML(
-                report.content
-              ) +
-              "</p>"
-            : ""
-        ) +
+async function loadArchive() {
+  console.log("Loading NAOSS Digital Archive...");
 
-        fileHTML;
+  await Promise.allSettled([
+    loadAdministrations(),
+    loadExecutives(),
+    loadMeetings(),
+    loadProgrammes(),
+    loadHandoverRecords(),
+    loadReports(),
+    loadDocuments(),
+    loadHistory()
+  ]);
 
-      list.appendChild(card);
-    }
+  console.log(
+    "NAOSS Digital Archive loading completed."
   );
 }
 
 
 /* =========================================
-   START ALL ARCHIVE SECTIONS
+   START WEBSITE
    ========================================= */
 
-async function loadArchive() {
+function startNAOSSApp() {
+  loadArchive();
+}
+
+
+if (document.readyState === "loading") {
+  document.addEventListener(
+    "DOMContentLoaded",
+    startNAOSSApp
+  );
+} else {
+  startNAOSSApp();
+}
+
+
+/* =========================================
+   REFRESH WHEN PAGE BECOMES VISIBLE
+   ========================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  function () {
+    if (
+      document.visibilityState === "visible"
+    ) {
+      loadArchive();
+    }
+  }
+);
+
+
+/* =========================================
+   ERROR HANDLING
+   ========================================= */
+
+window.addEventListener(
+  "error",
+  function (event) {
+    console.error(
+      "NAOSS Archive Error:",
+      event.error || event.message
+    );
+  }
+);
