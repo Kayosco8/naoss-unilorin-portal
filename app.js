@@ -1,4 +1,3 @@
-alert("NAOSS APP.JS IS WORKING");
 /* =========================================
    NAOSS UNILORIN DIGITAL ARCHIVE
    PUBLIC APP
@@ -829,18 +828,32 @@ async function loadReports() {
    ========================================= */
 
 async function loadArchive() {
-  await Promise.all([
-    loadExecutives(),
-    loadProgrammes(),
-    loadDocuments(),
-    loadAdministrations(),
-    loadHistory(),
-    loadMeetings(),
-    loadHandoverRecords(),
-    loadReports()
-  ]);
-}
+  try {
 
+    await Promise.all([
+      loadExecutives(),
+      loadProgrammes(),
+      loadDocuments(),
+      loadAdministrations(),
+      loadHistory(),
+      loadMeetings(),
+      loadHandoverRecords(),
+      loadReports()
+    ]);
+
+  } catch (error) {
+
+    document.body.insertAdjacentHTML(
+      "afterbegin",
+      "<div style='background:#f8d7da;color:#842029;padding:20px;font-weight:bold;'>" +
+      "NAOSS ERROR: " +
+      escapeHTML(error.message || error) +
+      "</div>"
+    );
+
+    console.error("NAOSS ERROR:", error);
+  }
+}
 
 /* =========================================
    START WEBSITE
