@@ -905,15 +905,16 @@ async function loadHandoverRecords() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Handover records error:", error);
+  console.error("Handover records error:", error);
 
-    container.innerHTML = `
-      <div class="empty-state">
-        <p>Unable to load handover records.</p>
-      </div>
-    `;
+  container.innerHTML = `
+    <div class="empty-state">
+      <p>Handover Error:</p>
+      <p>${escapeHTML(error.message || "Unknown error")}</p>
+    </div>
+  `;
 
-    return;
+  return;
   }
 
   if (!data || data.length === 0) {
