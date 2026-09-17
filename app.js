@@ -2,36 +2,43 @@
    NAOSS UNILORIN DIGITAL ARCHIVE
    PUBLIC APP
    ========================================= */
-document.body.insertAdjacentHTML(
-  "afterbegin",
-  "<div style='background:#fff3cd;color:#664d03;padding:12px;text-align:center;font-weight:bold;'>NAOSS JavaScript is running</div>"
-);
+
+
+/* =========================================
+   SUPABASE CONNECTION
+   ========================================= */
 
 if (!window.supabase) {
   document.body.insertAdjacentHTML(
     "afterbegin",
-    "<div style='background:#f8d7da;color:#842029;padding:12px;text-align:center;font-weight:bold;'>ERROR: Supabase library did not load.</div>"
+    "<div style='background:#f8d7da;color:#842029;padding:12px;text-align:center;font-weight:bold;'>" +
+    "ERROR: Supabase library did not load." +
+    "</div>"
   );
 
   throw new Error("Supabase library did not load.");
 }
 
-const SUPABASE_URL = "https://tydgxkpvklakqgtctwnj.supabase.co";
 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGd4a3B2a2xha3FndGN0d25qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3ODMwNzUsImV4cCI6MjEwMjM1OTA3NX0.KtqE49SHWz2jDH5dPhPOieI6yBjUleRz3ZgOY3Bmss";
+const SUPABASE_URL =
+  "https://tydgxkpvklakqgtctwnj.supabase.co";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5ZGd4a3B2a2xha3FndGN0d25qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3ODMwNzUsImV4cCI6MjEwMjM1OTA3NX0.KtqE49SHWz2jDH5dPhPOieI6yBjUleRz3ZgOY3Bmss";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
 
 console.log("NAOSS App.js loaded");
-console.log("Supabase library:", window.supabase);
 console.log("Supabase client:", supabaseClient);
-document.body.insertAdjacentHTML(
-  "afterbegin",
-  "<div style='background:#fff3cd;color:#664d03;padding:12px;text-align:center;font-weight:bold;'>NAOSS App.js is running</div>"
-);
+
+
 /* =========================================
    HELPER FUNCTIONS
    ========================================= */
@@ -70,6 +77,10 @@ function formatDate(dateValue) {
 
 
 function showEmpty(container, message) {
+  if (!container) {
+    return;
+  }
+
   container.innerHTML =
     "<div class='empty-state'>" +
     "<p>" +
@@ -84,7 +95,9 @@ function showEmpty(container, message) {
    ========================================= */
 
 async function loadExecutives() {
-  const list = document.getElementById("executive-list");
+
+  const list =
+    document.getElementById("executive-list");
 
   if (!list) {
     return;
@@ -95,24 +108,34 @@ async function loadExecutives() {
     "<p>Loading executive council...</p>" +
     "</div>";
 
-  const result = await supabaseClient
-    .from("executives")
-    .select("*")
-    .order("position", { ascending: true });
+  const result =
+    await supabaseClient
+      .from("executives")
+      .select("*")
+      .order("position", {
+        ascending: true
+      });
 
   if (result.error) {
-    console.error("Executive error:", result.error);
+
+    console.error(
+      "Executive error:",
+      result.error
+    );
 
     showEmpty(
       list,
-      "Unable to load executives: " +
-      result.error.message
+      "Unable to load executives."
     );
 
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       list,
       "No executive records have been added yet."
@@ -123,53 +146,72 @@ async function loadExecutives() {
 
   list.innerHTML = "";
 
-  result.data.forEach(function (executive) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (executive) {
 
-    card.className = "card executive-card";
+      const card =
+        document.createElement("div");
 
-    let photoHTML = "";
+      card.className =
+        "card executive-card";
 
-    if (executive.photo_url) {
-      photoHTML =
-        "<img src='" +
-        escapeHTML(executive.photo_url) +
-        "' alt='" +
+      let photoHTML = "";
+
+      if (executive.photo_url) {
+
+        photoHTML =
+          "<img src='" +
+          escapeHTML(
+            executive.photo_url
+          ) +
+          "' alt='" +
+          escapeHTML(
+            executive.full_name ||
+            "NAOSS Executive"
+          ) +
+          "'>";
+      }
+
+      card.innerHTML =
+        photoHTML +
+
+        "<h3>" +
         escapeHTML(
-          executive.full_name || "NAOSS Executive"
+          executive.position ||
+          "Executive"
         ) +
-        "'>";
+        "</h3>" +
+
+        "<p><strong>" +
+        escapeHTML(
+          executive.full_name ||
+          "Name unavailable"
+        ) +
+        "</strong></p>" +
+
+        (
+          executive.department
+            ? "<p><strong>Department:</strong> " +
+              escapeHTML(
+                executive.department
+              ) +
+              "</p>"
+            : ""
+        ) +
+
+        (
+          executive.level
+            ? "<p><strong>Level:</strong> " +
+              escapeHTML(
+                executive.level
+              ) +
+              "</p>"
+            : ""
+        );
+
+      list.appendChild(card);
     }
-
-    card.innerHTML =
-      photoHTML +
-
-      "<h3>" +
-      escapeHTML(
-        executive.position || "Executive"
-      ) +
-      "</h3>" +
-
-      "<p><strong>" +
-      escapeHTML(
-        executive.full_name || "Name unavailable"
-      ) +
-      "</strong></p>" +
-
-      (executive.department
-        ? "<p><strong>Department:</strong> " +
-          escapeHTML(executive.department) +
-          "</p>"
-        : "") +
-
-      (executive.level
-        ? "<p><strong>Level:</strong> " +
-          escapeHTML(executive.level) +
-          "</p>"
-        : "");
-
-    list.appendChild(card);
-  });
+  );
 }
 
 
@@ -178,7 +220,11 @@ async function loadExecutives() {
    ========================================= */
 
 async function loadProgrammes() {
-  const section = document.getElementById("programme-list");
+
+  const section =
+    document.getElementById(
+      "programme-list"
+    );
 
   if (!section) {
     return;
@@ -189,13 +235,20 @@ async function loadProgrammes() {
     "<p>Loading programmes and activities...</p>" +
     "</div>";
 
-  const result = await supabaseClient
-    .from("programmes")
-    .select("*")
-    .order("programme_date", { ascending: false });
+  const result =
+    await supabaseClient
+      .from("programmes")
+      .select("*")
+      .order("programme_date", {
+        ascending: false
+      });
 
   if (result.error) {
-    console.error("Programme error:", result.error);
+
+    console.error(
+      "Programme error:",
+      result.error
+    );
 
     showEmpty(
       section,
@@ -205,7 +258,11 @@ async function loadProgrammes() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       section,
       "No programmes have been archived yet."
@@ -216,81 +273,105 @@ async function loadProgrammes() {
 
   section.innerHTML = "";
 
-  result.data.forEach(function (programme) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (programme) {
 
-    card.className = "card programme-card";
+      const card =
+        document.createElement("div");
 
-    let dateHTML = "";
+      card.className =
+        "card programme-card";
 
-    if (programme.programme_date) {
-      dateHTML =
-        "<p><strong>Date:</strong> " +
-        formatDate(programme.programme_date) +
-        "</p>";
+      let dateHTML = "";
+
+      if (programme.programme_date) {
+
+        dateHTML =
+          "<p><strong>Date:</strong> " +
+          formatDate(
+            programme.programme_date
+          ) +
+          "</p>";
+      }
+
+      let venueHTML = "";
+
+      if (programme.venue) {
+
+        venueHTML =
+          "<p><strong>Venue:</strong> " +
+          escapeHTML(
+            programme.venue
+          ) +
+          "</p>";
+      }
+
+      let themeHTML = "";
+
+      if (programme.theme) {
+
+        themeHTML =
+          "<p><strong>Theme:</strong> " +
+          escapeHTML(
+            programme.theme
+          ) +
+          "</p>";
+      }
+
+      let objectiveHTML = "";
+
+      if (programme.objectives) {
+
+        objectiveHTML =
+          "<p><strong>Objectives:</strong> " +
+          escapeHTML(
+            programme.objectives
+          ) +
+          "</p>";
+      }
+
+      let reportHTML = "";
+
+      if (programme.report) {
+
+        reportHTML =
+          "<p><strong>Report:</strong> " +
+          escapeHTML(
+            programme.report
+          ) +
+          "</p>";
+      }
+
+      let outcomeHTML = "";
+
+      if (programme.outcome) {
+
+        outcomeHTML =
+          "<p><strong>Outcome:</strong> " +
+          escapeHTML(
+            programme.outcome
+          ) +
+          "</p>";
+      }
+
+      card.innerHTML =
+        "<h3>" +
+        escapeHTML(
+          programme.title ||
+          "NAOSS Programme"
+        ) +
+        "</h3>" +
+
+        themeHTML +
+        dateHTML +
+        venueHTML +
+        objectiveHTML +
+        reportHTML +
+        outcomeHTML;
+
+      section.appendChild(card);
     }
-
-    let venueHTML = "";
-
-    if (programme.venue) {
-      venueHTML =
-        "<p><strong>Venue:</strong> " +
-        escapeHTML(programme.venue) +
-        "</p>";
-    }
-
-    let themeHTML = "";
-
-    if (programme.theme) {
-      themeHTML =
-        "<p><strong>Theme:</strong> " +
-        escapeHTML(programme.theme) +
-        "</p>";
-    }
-
-    let objectiveHTML = "";
-
-    if (programme.objectives) {
-      objectiveHTML =
-        "<p><strong>Objectives:</strong> " +
-        escapeHTML(programme.objectives) +
-        "</p>";
-    }
-
-    let reportHTML = "";
-
-    if (programme.report) {
-      reportHTML =
-        "<p><strong>Report:</strong> " +
-        escapeHTML(programme.report) +
-        "</p>";
-    }
-
-    let outcomeHTML = "";
-
-    if (programme.outcome) {
-      outcomeHTML =
-        "<p><strong>Outcome:</strong> " +
-        escapeHTML(programme.outcome) +
-        "</p>";
-    }
-
-    card.innerHTML =
-      "<h3>" +
-      escapeHTML(
-        programme.title || "NAOSS Programme"
-      ) +
-      "</h3>" +
-
-      themeHTML +
-      dateHTML +
-      venueHTML +
-      objectiveHTML +
-      reportHTML +
-      outcomeHTML;
-
-    section.appendChild(card);
-  });
+  );
 }
 
 
@@ -299,7 +380,11 @@ async function loadProgrammes() {
    ========================================= */
 
 async function loadDocuments() {
-  const section = document.getElementById("document-list");
+
+  const section =
+    document.getElementById(
+      "document-list"
+    );
 
   if (!section) {
     return;
@@ -310,13 +395,20 @@ async function loadDocuments() {
     "<p>Loading documents...</p>" +
     "</div>";
 
-  const result = await supabaseClient
-    .from("documents")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const result =
+    await supabaseClient
+      .from("documents")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
   if (result.error) {
-    console.error("Document error:", result.error);
+
+    console.error(
+      "Document error:",
+      result.error
+    );
 
     showEmpty(
       section,
@@ -326,7 +418,11 @@ async function loadDocuments() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       section,
       "No documents have been archived yet."
@@ -337,56 +433,74 @@ async function loadDocuments() {
 
   section.innerHTML = "";
 
-  result.data.forEach(function (documentRecord) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (documentRecord) {
 
-    card.className = "card document-card";
+      const card =
+        document.createElement("div");
 
-    let typeHTML = "";
+      card.className =
+        "card document-card";
 
-    if (documentRecord.document_type) {
-      typeHTML =
-        "<p><strong>Type:</strong> " +
-        escapeHTML(documentRecord.document_type) +
-        "</p>";
+      let typeHTML = "";
+
+      if (
+        documentRecord.document_type
+      ) {
+
+        typeHTML =
+          "<p><strong>Type:</strong> " +
+          escapeHTML(
+            documentRecord.document_type
+          ) +
+          "</p>";
+      }
+
+      let descriptionHTML = "";
+
+      if (
+        documentRecord.description
+      ) {
+
+        descriptionHTML =
+          "<p>" +
+          escapeHTML(
+            documentRecord.description
+          ) +
+          "</p>";
+      }
+
+      let linkHTML = "";
+
+      if (documentRecord.file_url) {
+
+        linkHTML =
+          "<p>" +
+          "<a href='" +
+          escapeHTML(
+            documentRecord.file_url
+          ) +
+          "' target='_blank' rel='noopener noreferrer'>" +
+          "View Document" +
+          "</a>" +
+          "</p>";
+      }
+
+      card.innerHTML =
+        "<h3>" +
+        escapeHTML(
+          documentRecord.title ||
+          "Official Document"
+        ) +
+        "</h3>" +
+
+        typeHTML +
+        descriptionHTML +
+        linkHTML;
+
+      section.appendChild(card);
     }
-
-    let descriptionHTML = "";
-
-    if (documentRecord.description) {
-      descriptionHTML =
-        "<p>" +
-        escapeHTML(documentRecord.description) +
-        "</p>";
-    }
-
-    let linkHTML = "";
-
-    if (documentRecord.file_url) {
-      linkHTML =
-        "<p>" +
-        "<a href='" +
-        escapeHTML(documentRecord.file_url) +
-        "' target='_blank' rel='noopener noreferrer'>" +
-        "View Document" +
-        "</a>" +
-        "</p>";
-    }
-
-    card.innerHTML =
-      "<h3>" +
-      escapeHTML(
-        documentRecord.title ||
-        "Official Document"
-      ) +
-      "</h3>" +
-
-      typeHTML +
-      descriptionHTML +
-      linkHTML;
-
-    section.appendChild(card);
-  });
+  );
 }
 
 
@@ -395,9 +509,11 @@ async function loadDocuments() {
    ========================================= */
 
 async function loadAdministrations() {
-  const list = document.getElementById(
-    "administration-list"
-  );
+
+  const list =
+    document.getElementById(
+      "administration-list"
+    );
 
   if (!list) {
     return;
@@ -408,13 +524,17 @@ async function loadAdministrations() {
     "<p>Loading current administration...</p>" +
     "</div>";
 
-  const result = await supabaseClient
-    .from("administrations")
-    .select("*")
-    .eq("session", "2026/2027")
-    .order("created_at", { ascending: false });
+  const result =
+    await supabaseClient
+      .from("administrations")
+      .select("*")
+      .eq("session", "2026/2027")
+      .order("created_at", {
+        ascending: false
+      });
 
   if (result.error) {
+
     console.error(
       "Administration error:",
       result.error
@@ -428,7 +548,11 @@ async function loadAdministrations() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       list,
       "No current administration has been added yet."
@@ -439,49 +563,66 @@ async function loadAdministrations() {
 
   list.innerHTML = "";
 
-  result.data.forEach(function (administration) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (administration) {
 
-    card.className = "card admin-card";
+      const card =
+        document.createElement("div");
 
-    card.innerHTML =
-      "<h3>" +
-      escapeHTML(
-        administration.name ||
-        "NAOSS Administration"
-      ) +
-      "</h3>" +
+      card.className =
+        "card admin-card";
 
-      (administration.session
-        ? "<p><strong>Session:</strong> " +
-          escapeHTML(administration.session) +
-          "</p>"
-        : "") +
+      card.innerHTML =
+        "<h3>" +
+        escapeHTML(
+          administration.name ||
+          "NAOSS Administration"
+        ) +
+        "</h3>" +
 
-      (administration.president
-        ? "<p><strong>President:</strong> " +
-          escapeHTML(administration.president) +
-          "</p>"
-        : "") +
+        (
+          administration.session
+            ? "<p><strong>Session:</strong> " +
+              escapeHTML(
+                administration.session
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (administration.general_secretary
-        ? "<p><strong>General Secretary:</strong> " +
-          escapeHTML(
-            administration.general_secretary
-          ) +
-          "</p>"
-        : "") +
+        (
+          administration.president
+            ? "<p><strong>President:</strong> " +
+              escapeHTML(
+                administration.president
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (administration.description
-        ? "<p>" +
-          escapeHTML(
-            administration.description
-          ) +
-          "</p>"
-        : "");
+        (
+          administration.general_secretary
+            ? "<p><strong>General Secretary:</strong> " +
+              escapeHTML(
+                administration.general_secretary
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-    list.appendChild(card);
-  });
+        (
+          administration.description
+            ? "<p>" +
+              escapeHTML(
+                administration.description
+              ) +
+              "</p>"
+            : ""
+        );
+
+      list.appendChild(card);
+    }
+  );
 }
 
 
@@ -490,9 +631,11 @@ async function loadAdministrations() {
    ========================================= */
 
 async function loadHistory() {
-  const list = document.getElementById(
-    "history-list"
-  );
+
+  const list =
+    document.getElementById(
+      "history-list"
+    );
 
   if (!list) {
     return;
@@ -503,12 +646,16 @@ async function loadHistory() {
     "<p>Loading NAOSS history...</p>" +
     "</div>";
 
-  const result = await supabaseClient
-    .from("administrations")
-    .select("*")
-    .order("created_at", { ascending: true });
+  const result =
+    await supabaseClient
+      .from("administrations")
+      .select("*")
+      .order("created_at", {
+        ascending: true
+      });
 
   if (result.error) {
+
     console.error(
       "History error:",
       result.error
@@ -522,7 +669,11 @@ async function loadHistory() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       list,
       "No historical administrations have been added yet."
@@ -533,69 +684,103 @@ async function loadHistory() {
 
   list.innerHTML = "";
 
-  result.data.forEach(function (administration) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (administration) {
 
-    card.className = "card history-card";
+      const card =
+        document.createElement("div");
 
-    card.innerHTML =
-      "<h3>" +
-      escapeHTML(
-        administration.name ||
-        "NAOSS Administration"
-      ) +
-      "</h3>" +
+      card.className =
+        "card history-card";
 
-      (administration.session
-        ? "<p><strong>Session:</strong> " +
-          escapeHTML(administration.session) +
-          "</p>"
-        : "") +
+      card.innerHTML =
+        "<h3>" +
+        escapeHTML(
+          administration.name ||
+          "NAOSS Administration"
+        ) +
+        "</h3>" +
 
-      (administration.president
-        ? "<p><strong>President:</strong> " +
-          escapeHTML(administration.president) +
-          "</p>"
-        : "") +
+        (
+          administration.session
+            ? "<p><strong>Session:</strong> " +
+              escapeHTML(
+                administration.session
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (administration.general_secretary
-        ? "<p><strong>General Secretary:</strong> " +
-          escapeHTML(
-            administration.general_secretary
-          ) +
-          "</p>"
-        : "") +
+        (
+          administration.president
+            ? "<p><strong>President:</strong> " +
+              escapeHTML(
+                administration.president
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (administration.description
-        ? "<p>" +
-          escapeHTML(
-            administration.description
-          ) +
-          "</p>"
-        : "");
+        (
+          administration.general_secretary
+            ? "<p><strong>General Secretary:</strong> " +
+              escapeHTML(
+                administration.general_secretary
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-    list.appendChild(card);
-  });
+        (
+          administration.description
+            ? "<p>" +
+              escapeHTML(
+                administration.description
+              ) +
+              "</p>"
+            : ""
+        );
+
+      list.appendChild(card);
+    }
+  );
 }
-/* LOAD MEETINGS */
+
+
+/* =========================================
+   LOAD MEETINGS
+   ========================================= */
 
 async function loadMeetings() {
-  const list = document.getElementById("meeting-list");
+
+  const list =
+    document.getElementById(
+      "meeting-list"
+    );
 
   if (!list) {
     return;
   }
 
   list.innerHTML =
-    "<div class='empty-state'><p>Loading meetings and minutes...</p></div>";
+    "<div class='empty-state'>" +
+    "<p>Loading meetings and minutes...</p>" +
+    "</div>";
 
-  const result = await supabaseClient
-    .from("meetings")
-    .select("*")
-    .order("meeting_date", { ascending: false });
+  const result =
+    await supabaseClient
+      .from("meetings")
+      .select("*")
+      .order("meeting_date", {
+        ascending: false
+      });
 
   if (result.error) {
-    console.error("Meeting error:", result.error);
+
+    console.error(
+      "Meeting error:",
+      result.error
+    );
 
     showEmpty(
       list,
@@ -605,7 +790,11 @@ async function loadMeetings() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       list,
       "No meeting records have been archived yet."
@@ -616,70 +805,113 @@ async function loadMeetings() {
 
   list.innerHTML = "";
 
-  result.data.forEach(function (meeting) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (meeting) {
 
-    card.className = "card meeting-card";
+      const card =
+        document.createElement("div");
 
-    card.innerHTML =
-      "<h3>" +
-      escapeHTML(meeting.title || "NAOSS Meeting") +
-      "</h3>" +
+      card.className =
+        "card meeting-card";
 
-      (meeting.meeting_date
-        ? "<p><strong>Date:</strong> " +
-          formatDate(meeting.meeting_date) +
-          "</p>"
-        : "") +
+      card.innerHTML =
+        "<h3>" +
+        escapeHTML(
+          meeting.title ||
+          "NAOSS Meeting"
+        ) +
+        "</h3>" +
 
-      (meeting.meet_time
-        ? "<p><strong>Time:</strong> " +
-          escapeHTML(meeting.meet_time) +
-          "</p>"
-        : "") +
+        (
+          meeting.meeting_date
+            ? "<p><strong>Date:</strong> " +
+              formatDate(
+                meeting.meeting_date
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (meeting.venue
-        ? "<p><strong>Venue:</strong> " +
-          escapeHTML(meeting.venue) +
-          "</p>"
-        : "") +
+        (
+          meeting.meet_time
+            ? "<p><strong>Time:</strong> " +
+              escapeHTML(
+                meeting.meet_time
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (meeting.agenda
-        ? "<p><strong>Agenda:</strong> " +
-          escapeHTML(meeting.agenda) +
-          "</p>"
-        : "") +
+        (
+          meeting.venue
+            ? "<p><strong>Venue:</strong> " +
+              escapeHTML(
+                meeting.venue
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-      (meeting.minutes
-        ? "<p><strong>Minutes:</strong> " +
-          escapeHTML(meeting.minutes) +
-          "</p>"
-        : "");
+        (
+          meeting.agenda
+            ? "<p><strong>Agenda:</strong> " +
+              escapeHTML(
+                meeting.agenda
+              ) +
+              "</p>"
+            : ""
+        ) +
 
-    list.appendChild(card);
-  });
+        (
+          meeting.minutes
+            ? "<p><strong>Minutes:</strong> " +
+              escapeHTML(
+                meeting.minutes
+              ) +
+              "</p>"
+            : ""
+        );
+
+      list.appendChild(card);
+    }
+  );
 }
 
 
-/* LOAD HANDOVER RECORDS */
+/* =========================================
+   LOAD HANDOVER RECORDS
+   ========================================= */
 
 async function loadHandoverRecords() {
-  const list = document.getElementById("handover-list");
+
+  const list =
+    document.getElementById(
+      "handover-list"
+    );
 
   if (!list) {
     return;
   }
 
   list.innerHTML =
-    "<div class='empty-state'><p>Loading handover records...</p></div>";
+    "<div class='empty-state'>" +
+    "<p>Loading handover records...</p>" +
+    "</div>";
 
-  const result = await supabaseClient
-    .from("handover_records")
-    .select("*")
-    .order("created", { ascending: false });
+  const result =
+    await supabaseClient
+      .from("handover_records")
+      .select("*")
+      .order("created", {
+        ascending: false
+      });
 
   if (result.error) {
-    console.error("Handover error:", result.error);
+
+    console.error(
+      "Handover error:",
+      result.error
+    );
 
     showEmpty(
       list,
@@ -689,7 +921,11 @@ async function loadHandoverRecords() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       list,
       "No handover records have been archived yet."
@@ -700,63 +936,96 @@ async function loadHandoverRecords() {
 
   list.innerHTML = "";
 
-  result.data.forEach(function (handover) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (handover) {
 
-    card.className = "card handover-card";
+      const card =
+        document.createElement("div");
 
-    let fileHTML = "";
+      card.className =
+        "card handover-card";
 
-    if (handover.file_url) {
-      fileHTML =
-        "<p><a href='" +
-        escapeHTML(handover.file_url) +
-        "' target='_blank' rel='noopener noreferrer'>" +
-        "View Handover Document" +
-        "</a></p>";
+      let fileHTML = "";
+
+      if (handover.file_url) {
+
+        fileHTML =
+          "<p>" +
+          "<a href='" +
+          escapeHTML(
+            handover.file_url
+          ) +
+          "' target='_blank' rel='noopener noreferrer'>" +
+          "View Handover Document" +
+          "</a>" +
+          "</p>";
+      }
+
+      card.innerHTML =
+        "<h3>Handover Record</h3>" +
+
+        (
+          handover.status
+            ? "<p><strong>Status:</strong> " +
+              escapeHTML(
+                handover.status
+              ) +
+              "</p>"
+            : ""
+        ) +
+
+        (
+          handover.description
+            ? "<p><strong>Details:</strong> " +
+              escapeHTML(
+                handover.description
+              ) +
+              "</p>"
+            : ""
+        ) +
+
+        fileHTML;
+
+      list.appendChild(card);
     }
-
-    card.innerHTML =
-      "<h3>Handover Record</h3>" +
-
-      (handover.status
-        ? "<p><strong>Status:</strong> " +
-          escapeHTML(handover.status) +
-          "</p>"
-        : "") +
-
-      (handover.description
-        ? "<p><strong>Details:</strong> " +
-          escapeHTML(handover.description) +
-          "</p>"
-        : "") +
-
-      fileHTML;
-
-    list.appendChild(card);
-  });
+  );
 }
 
 
-/* LOAD REPORTS */
+/* =========================================
+   LOAD REPORTS
+   ========================================= */
 
 async function loadReports() {
-  const list = document.getElementById("report-list");
+
+  const list =
+    document.getElementById(
+      "report-list"
+    );
 
   if (!list) {
     return;
   }
 
   list.innerHTML =
-    "<div class='empty-state'><p>Loading reports...</p></div>";
+    "<div class='empty-state'>" +
+    "<p>Loading reports...</p>" +
+    "</div>";
 
-  const result = await supabaseClient
-    .from("reports")
-    .select("*")
-    .order("report_date", { ascending: false });
+  const result =
+    await supabaseClient
+      .from("reports")
+      .select("*")
+      .order("report_date", {
+        ascending: false
+      });
 
   if (result.error) {
-    console.error("Report error:", result.error);
+
+    console.error(
+      "Report error:",
+      result.error
+    );
 
     showEmpty(
       list,
@@ -766,7 +1035,11 @@ async function loadReports() {
     return;
   }
 
-  if (!result.data || result.data.length === 0) {
+  if (
+    !result.data ||
+    result.data.length === 0
+  ) {
+
     showEmpty(
       list,
       "No reports have been archived yet."
@@ -777,133 +1050,79 @@ async function loadReports() {
 
   list.innerHTML = "";
 
-  result.data.forEach(function (report) {
-    const card = document.createElement("div");
+  result.data.forEach(
+    function (report) {
 
-    card.className = "card report-card";
+      const card =
+        document.createElement("div");
 
-    let fileHTML = "";
+      card.className =
+        "card report-card";
 
-    if (report.file_url) {
-      fileHTML =
-        "<p><a href='" +
-        escapeHTML(report.file_url) +
-        "' target='_blank' rel='noopener noreferrer'>" +
-        "View Report File" +
-        "</a></p>";
+      let fileHTML = "";
+
+      if (report.file_url) {
+
+        fileHTML =
+          "<p>" +
+          "<a href='" +
+          escapeHTML(
+            report.file_url
+          ) +
+          "' target='_blank' rel='noopener noreferrer'>" +
+          "View Report File" +
+          "</a>" +
+          "</p>";
+      }
+
+      card.innerHTML =
+        "<h3>" +
+        escapeHTML(
+          report.title ||
+          "NAOSS Report"
+        ) +
+        "</h3>" +
+
+        (
+          report.report_type
+            ? "<p><strong>Type:</strong> " +
+              escapeHTML(
+                report.report_type
+              ) +
+              "</p>"
+            : ""
+        ) +
+
+        (
+          report.report_date
+            ? "<p><strong>Date:</strong> " +
+              formatDate(
+                report.report_date
+              ) +
+              "</p>"
+            : ""
+        ) +
+
+        (
+          report.content
+            ? "<p><strong>Report:</strong> " +
+              escapeHTML(
+                report.content
+              ) +
+              "</p>"
+            : ""
+        ) +
+
+        fileHTML;
+
+      list.appendChild(card);
     }
-
-    card.innerHTML =
-      "<h3>" +
-      escapeHTML(report.title || "NAOSS Report") +
-      "</h3>" +
-
-      (report.report_type
-        ? "<p><strong>Type:</strong> " +
-          escapeHTML(report.report_type) +
-          "</p>"
-        : "") +
-
-      (report.report_date
-        ? "<p><strong>Date:</strong> " +
-          formatDate(report.report_date) +
-          "</p>"
-        : "") +
-
-      (report.content
-        ? "<p><strong>Report:</strong> " +
-          escapeHTML(report.content) +
-          "</p>"
-        : "") +
-
-      fileHTML;
-
-    list.appendChild(card);
-  });
+  );
 }
 
+
 /* =========================================
-   LOAD COMPLETE ARCHIVE
+   START ALL ARCHIVE SECTIONS
    ========================================= */
 
 async function loadArchive() {
-  const testBox = document.createElement("div");
-
-  testBox.style =
-    "background:#e8f4ff;color:#003b5c;padding:20px;margin:20px;font-weight:bold;";
-
-  testBox.innerHTML = "Testing Supabase connection...";
-
-  document.body.insertBefore(
-    testBox,
-    document.body.firstChild
-  );
-
-  const result = await supabaseClient
-    .from("executives")
-    .select("*");
-
-  if (result.error) {
-    testBox.innerHTML =
-      "<strong>SUPABASE ERROR:</strong><br><br>" +
-      escapeHTML(result.error.message) +
-      "<br><br>" +
-      "<strong>Code:</strong> " +
-      escapeHTML(result.error.code || "No code");
-    
-    console.error("SUPABASE ERROR:", result.error);
-    return;
-  }
-
-  testBox.innerHTML =
-    "<strong>SUPABASE CONNECTION WORKS!</strong><br><br>" +
-    "Executive records found: " +
-    result.data.length;
-
-  console.log("Supabase data:", result.data);
-}
-/* =========================================
-   START WEBSITE
-   ========================================= */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
-    loadArchive();
-  }
-);
-
-
-/* =========================================
-   REFRESH WHEN PAGE BECOMES VISIBLE
-   ========================================= */
-
-document.addEventListener(
-  "visibilitychange",
-  function () {
-
-    if (
-      document.visibilityState === "visible"
-    ) {
-      loadArchive();
-    }
-
-  }
-);
-
-
-/* =========================================
-   ERROR HANDLING
-   ========================================= */
-
-window.addEventListener(
-  "error",
-  function (event) {
-
-    console.error(
-      "NAOSS Archive Error:",
-      event.error || event.message
-    );
-
-  }
-);
