@@ -107,7 +107,8 @@ async function loadExecutives() {
 
     showEmpty(
       list,
-      "Unable to load the Executive Council."
+      "Unable to load executives: " +
+      result.error.message
     );
 
     return;
