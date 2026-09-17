@@ -1111,3 +1111,201 @@ async function loadReports() {
     })
     .join("");
                }
+/* =========================================
+   LOAD NAOSSITE OF THE WEEK
+   ========================================= */
+
+async function loadNAOSSiteOfTheWeek() {
+
+  const container =
+    document.getElementById("naossite-list") ||
+    document.getElementById("naossite-of-the-week") ||
+    document.getElementById("naossite");
+
+  if (!container) {
+    console.warn(
+      "NAOSSite of the Week container not found."
+    );
+    return;
+  }
+
+  container.innerHTML =
+    "<div class='empty-state'><p>Loading NAOSSite of the Week...</p></div>";
+
+  /*
+    The NAOSSite table has not yet been
+    confirmed in the current Supabase database.
+
+    Do not query an unknown table.
+  */
+
+  showEmpty(
+    container,
+    "NAOSSite of the Week records will appear here."
+  );
+}
+
+
+/* =========================================
+   LOAD VOTING RECORDS
+   ========================================= */
+
+async function loadVotingRecords() {
+
+  const container =
+    document.getElementById("voting-list") ||
+    document.getElementById("voting-records") ||
+    document.getElementById("voting");
+
+  if (!container) {
+    console.warn(
+      "Voting records container not found."
+    );
+    return;
+  }
+
+  container.innerHTML =
+    "<div class='empty-state'><p>Loading voting and election records...</p></div>";
+
+  /*
+    The voting/election table has not yet
+    been confirmed in Supabase.
+
+    Do not query an unknown table.
+  */
+
+  showEmpty(
+    container,
+    "Voting and election records will appear here."
+  );
+}
+
+
+/* =========================================
+   LOAD COMPLETE ARCHIVE
+   ========================================= */
+
+async function loadArchive() {
+
+  console.log(
+    "Loading NAOSS Digital Archive..."
+  );
+
+  const loaders = [
+
+    loadAdministrations(),
+
+    loadExecutives(),
+
+    loadMeetings(),
+
+    loadProgrammes(),
+
+    loadReports(),
+
+    loadHandoverRecords(),
+
+    loadDocuments(),
+
+    loadHistory(),
+
+    loadNAOSSiteOfTheWeek(),
+
+    loadVotingRecords()
+
+  ];
+
+  await Promise.allSettled(loaders);
+
+  console.log(
+    "NAOSS Digital Archive loading completed."
+  );
+}
+
+
+/* =========================================
+   START WEBSITE
+   ========================================= */
+
+function startNAOSSApp() {
+
+  loadArchive();
+
+}
+
+
+/* =========================================
+   DOM READY
+   ========================================= */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    startNAOSSApp
+  );
+
+} else {
+
+  startNAOSSApp();
+
+}
+
+
+/* =========================================
+   REFRESH WHEN PAGE BECOMES VISIBLE
+   ========================================= */
+
+document.addEventListener(
+  "visibilitychange",
+  function () {
+
+    if (
+      document.visibilityState ===
+      "visible"
+    ) {
+
+      loadArchive();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   GLOBAL ERROR HANDLING
+   ========================================= */
+
+window.addEventListener(
+  "error",
+  function (event) {
+
+    console.error(
+      "NAOSS Archive Error:",
+      event.error ||
+      event.message
+    );
+
+  }
+);
+
+
+/* =========================================
+   UNHANDLED PROMISE ERROR
+   ========================================= */
+
+window.addEventListener(
+  "unhandledrejection",
+  function (event) {
+
+    console.error(
+      "NAOSS Archive Promise Error:",
+      event.reason
+    );
+
+  }
+);
