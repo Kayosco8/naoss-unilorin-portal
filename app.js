@@ -828,33 +828,41 @@ async function loadReports() {
    ========================================= */
 
 async function loadArchive() {
-  try {
+  const testBox = document.createElement("div");
 
-    await Promise.all([
-      loadExecutives(),
-      loadProgrammes(),
-      loadDocuments(),
-      loadAdministrations(),
-      loadHistory(),
-      loadMeetings(),
-      loadHandoverRecords(),
-      loadReports()
-    ]);
+  testBox.style =
+    "background:#e8f4ff;color:#003b5c;padding:20px;margin:20px;font-weight:bold;";
 
-  } catch (error) {
+  testBox.innerHTML = "Testing Supabase connection...";
 
-    document.body.insertAdjacentHTML(
-      "afterbegin",
-      "<div style='background:#f8d7da;color:#842029;padding:20px;font-weight:bold;'>" +
-      "NAOSS ERROR: " +
-      escapeHTML(error.message || error) +
-      "</div>"
-    );
+  document.body.insertBefore(
+    testBox,
+    document.body.firstChild
+  );
 
-    console.error("NAOSS ERROR:", error);
+  const result = await supabaseClient
+    .from("executives")
+    .select("*");
+
+  if (result.error) {
+    testBox.innerHTML =
+      "<strong>SUPABASE ERROR:</strong><br><br>" +
+      escapeHTML(result.error.message) +
+      "<br><br>" +
+      "<strong>Code:</strong> " +
+      escapeHTML(result.error.code || "No code");
+    
+    console.error("SUPABASE ERROR:", result.error);
+    return;
   }
-}
 
+  testBox.innerHTML =
+    "<strong>SUPABASE CONNECTION WORKS!</strong><br><br>" +
+    "Executive records found: " +
+    result.data.length;
+
+  console.log("Supabase data:", result.data);
+}
 /* =========================================
    START WEBSITE
    ========================================= */
